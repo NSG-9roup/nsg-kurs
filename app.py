@@ -1,6 +1,6 @@
 """
 app.py
-Server lokal mini untuk Dashboard Monitoring Kurs Bank Indonesia - PT. Nabel Sakha Gemilang.
+Server lokal mini untuk Dashboard Monitoring Kurs Bank Indonesia - Nabel Sakha Group.
 
 Fitur:
 1. Web server lokal (http://localhost:5000)
@@ -58,7 +58,7 @@ class KursAppHandler(SimpleHTTPRequestHandler):
             self.send_json(200, {
                 "status": "online",
                 "service": "BI Exchange Rate Monitor",
-                "company": "PT. Nabel Sakha Gemilang",
+                "company": "Nabel Sakha Group",
                 "port": PORT
             })
         elif path == '/' or path == '':
@@ -146,7 +146,7 @@ def main():
     url_local = f"http://localhost:{PORT}"
     url_network = f"http://{local_ip}:{PORT}"
     print("=" * 65)
-    print(f"[*] SERVER MONITORING KURS BI - PT. NABEL SAKHA GEMILANG")
+    print(f"[*] SERVER MONITORING KURS BI - NABEL SAKHA GROUP")
     print("=" * 65)
     print(f"[*] Dashboard (Laptop Anda)      : {url_local}")
     print(f"[*] Dashboard (Teman Satu Kantor): {url_network}")

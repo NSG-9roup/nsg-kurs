@@ -1,5 +1,5 @@
 # Otomasi Laporan Kurs Transaksi Bank Indonesia
-### PT. Nabel Sakha Gemilang
+### Nabel Sakha Group
 
 Sistem otomatisasi harian untuk mengambil kurs resmi Bank Indonesia (USD, EUR, JPY, KRW, SGD), menghitung normalisasi satuan dan kurs tengah, menampilkan tren pergerakan harian, dan mengirimkan laporan berformat elegan ke email penerima tepat setiap hari kerja pukul 08:00 WIB.
 

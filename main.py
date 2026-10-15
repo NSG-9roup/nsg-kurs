@@ -1,6 +1,6 @@
 """
 main.py
-Program utama otomasi Kurs Transaksi Bank Indonesia untuk PT. Nabel Sakha Gemilang.
+Program utama otomasi Kurs Transaksi Bank Indonesia untuk Nabel Sakha Group.
 Mendukung:
 - Pengiriman instan (--now) untuk pengujian manual.
 - Mode Smart Polling (--poll) untuk jadwal otomatis jam 08:00 WIB.
@@ -159,7 +159,7 @@ def run_smart_polling(max_minutes=45, interval_seconds=300):
     return run_immediate_send(data=last_fetched_data)
 
 def main():
-    parser = argparse.ArgumentParser(description="Otomasi Laporan Kurs BI PT. Nabel Sakha Gemilang")
+    parser = argparse.ArgumentParser(description="Otomasi Laporan Kurs BI Nabel Sakha Group")
     parser.add_argument("--now", action="store_true", help="Kirim email sekarang langsung tanpa polling")
     parser.add_argument("--poll", action="store_true", help="Jalankan mode smart polling jam 08:00 WIB")
     parser.add_argument("--sync", action="store_true", help="Sinkronkan data realtime BI ke dashboard lokal saja")

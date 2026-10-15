@@ -19,6 +19,7 @@ def build_html_template(data, use_cid=True):
     rates = data['rates']
     tanggal_bi = data.get('tanggal_bi', datetime.now().strftime("%d %B %Y"))
     jam_update = data.get('timestamp', '08:00 WIB')
+    dashboard_url = os.environ.get('DASHBOARD_URL', 'https://nsg-9roup.github.io/nsg-kurs/')
     
     logo_src = "cid:nsg_logo" if (use_cid and os.path.exists(LOGO_PATH)) else ONLINE_LOGO_URL
 
@@ -221,12 +222,18 @@ def build_html_template(data, use_cid=True):
               &bull; <strong>Perubahan:</strong> Selisih Kurs Tengah terhadap hari kerja sebelumnya.
             </td>
             <td valign="middle" align="right" style="padding-left: 12px; white-space: nowrap;">
-              <!-- Bulletproof Button for Outlook -->
+              <!-- Bulletproof Action Buttons for Outlook / Webmail -->
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td bgcolor="#f8fafc" style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 14px; text-align: center;">
+                  <td bgcolor="#f8fafc" style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 7px 12px; text-align: center;">
                     <a href="https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx" target="_blank" style="font-size: 11px; font-weight: bold; color: #0284c7; text-decoration: none; font-family: 'Segoe UI', Arial, sans-serif; display: inline-block;">
                       Verifikasi di Web BI &nearr;
+                    </a>
+                  </td>
+                  <td width="8" style="width: 8px;"></td>
+                  <td bgcolor="#ea580c" style="background-color: #ea580c; border: 1px solid #ea580c; border-radius: 6px; padding: 7px 12px; text-align: center;">
+                    <a href="{dashboard_url}" target="_blank" style="font-size: 11px; font-weight: bold; color: #ffffff; text-decoration: none; font-family: 'Segoe UI', Arial, sans-serif; display: inline-block;">
+                      📊 Dashboard Kurs &nearr;
                     </a>
                   </td>
                 </tr>
@@ -244,7 +251,7 @@ def build_html_template(data, use_cid=True):
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
           <tr>
             <td align="left" style="font-size: 11px; color: #94a3b8;">
-              Sistem Otomasi Finansial &bull; <strong>PT. Nabel Sakha Gemilang</strong>
+              Sistem Otomasi Finansial &bull; <strong>Nabel Sakha Group</strong>
             </td>
             <td align="right" style="font-size: 11px; color: #94a3b8;">
               Internal Report
@@ -284,7 +291,7 @@ def send_kurs_email(data, recipient_email, smtp_config, subject=None):
     rates = data.get('rates', {})
     tanggal_bi = data.get('tanggal_bi', '')
     jam_update = data.get('timestamp', '')
-    plain_text = f"""Laporan Kurs Transaksi Bank Indonesia - PT. Nabel Sakha Gemilang
+    plain_text = f"""Laporan Kurs Transaksi Bank Indonesia - Nabel Sakha Group
 Tanggal Rilis: {tanggal_bi} ({jam_update})
 
 -------------------------------------------------------------------------
@@ -297,7 +304,8 @@ SGD       | {rates.get('SGD', {}).get('jual_str', '-'):15} | {rates.get('SGD', {
 USD       | {rates.get('USD', {}).get('jual_str', '-'):15} | {rates.get('USD', {}).get('beli_str', '-'):15} | {rates.get('USD', {}).get('tengah_str', '-'):13} | {rates.get('USD', {}).get('trend_text', '-')}
 -------------------------------------------------------------------------
 * JPY dinormalisasi per 1 Yen (nilai resmi BI per 100 Yen).
-* Verifikasi resmi: https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx
+* Verifikasi resmi : https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx
+* Dashboard online : {os.environ.get('DASHBOARD_URL', 'https://nsg-9roup.github.io/nsg-kurs/')}
 """
     msg_alt.attach(MIMEText(plain_text, 'plain', 'utf-8'))
 
