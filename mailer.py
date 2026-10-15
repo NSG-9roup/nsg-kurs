@@ -258,6 +258,14 @@ def build_html_template(data, use_cid=True):
             </td>
           </tr>
         </table>
+        <!-- Small Subtle Marketing Contact Notice -->
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-top: 6px;">
+          <tr>
+            <td align="center" style="font-size: 10.5px; color: #94a3b8; line-height: 1.4; padding-top: 4px;">
+              Jika ada yang ingin ditanyakan, hubungi: <a href="mailto:marketing@nabelsakha.com" style="color: #64748b; text-decoration: underline;">marketing@nabelsakha.com</a>
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
 
@@ -306,6 +314,7 @@ USD       | {rates.get('USD', {}).get('jual_str', '-'):15} | {rates.get('USD', {
 * JPY dinormalisasi per 1 Yen (nilai resmi BI per 100 Yen).
 * Verifikasi resmi : https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx
 * Dashboard online : {os.environ.get('DASHBOARD_URL', 'https://nsg-9roup.github.io/nsg-kurs/')}
+* Ada pertanyaan seputar kurs? Hubungi: marketing@nabelsakha.com
 """
     msg_alt.attach(MIMEText(plain_text, 'plain', 'utf-8'))
 

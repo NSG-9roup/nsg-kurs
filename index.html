@@ -41,6 +41,138 @@
       --danger-border: #fecaca;
     }
 
+    [data-theme="dark"] {
+      --bg: #090d16;
+      --surface: #131b2e;
+      --surface-subtle: #1e293b;
+      --border: #23314d;
+      --border-focus: #ea580c;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+      --success-bg: rgba(21, 128, 61, 0.18);
+      --success-border: #166534;
+      --danger-bg: rgba(185, 28, 28, 0.18);
+      --danger-border: #991b1b;
+    }
+
+    [data-theme="dark"] .nav-title h1,
+    [data-theme="dark"] .card-title,
+    [data-theme="dark"] .status-text,
+    [data-theme="dark"] .split-val,
+    [data-theme="dark"] .result-amount,
+    [data-theme="dark"] .accordion-time,
+    [data-theme="dark"] .log-meta-val,
+    [data-theme="dark"] .currency-code,
+    [data-theme="dark"] .tengah-val {
+      color: #f8fafc !important;
+    }
+
+    [data-theme="dark"] .currency-card.usd-card .tengah-val {
+      color: #38bdf8 !important;
+    }
+
+    [data-theme="dark"] .currency-card.usd-card {
+      background: rgba(2, 132, 199, 0.12) !important;
+      border-color: #0284c7 !important;
+    }
+
+    [data-theme="dark"] .currency-card {
+      background: var(--surface) !important;
+      border-color: var(--border) !important;
+    }
+
+    [data-theme="dark"] .accordion-header,
+    [data-theme="dark"] .accordion-body {
+      background: var(--surface) !important;
+    }
+
+    [data-theme="dark"] .accordion-item.open .accordion-header,
+    [data-theme="dark"] .accordion-header:hover {
+      background: var(--surface-subtle) !important;
+    }
+
+    [data-theme="dark"] .log-message-box,
+    [data-theme="dark"] .range-pills,
+    [data-theme="dark"] .badge-count,
+    [data-theme="dark"] .accordion-duration,
+    [data-theme="dark"] .accordion-target code,
+    [data-theme="dark"] .system-status {
+      background: var(--surface-subtle) !important;
+      border-color: var(--border) !important;
+      color: #e2e8f0 !important;
+    }
+
+    [data-theme="dark"] .pill-btn.active {
+      background: var(--surface) !important;
+      color: #f97316 !important;
+    }
+
+    [data-theme="dark"] .input-row input,
+    [data-theme="dark"] .input-row select,
+    [data-theme="dark"] select#selectRateType,
+    [data-theme="dark"] select#chartCurrencyFilter {
+      background: var(--surface-subtle) !important;
+      color: #f8fafc !important;
+      border-color: var(--border) !important;
+    }
+
+    [data-theme="dark"] .converter-result {
+      background: rgba(234, 88, 12, 0.1) !important;
+      border-color: rgba(234, 88, 12, 0.3) !important;
+    }
+
+    [data-theme="dark"] .btn-outline {
+      background: var(--surface) !important;
+      color: #f8fafc !important;
+      border-color: var(--border) !important;
+    }
+
+    [data-theme="dark"] .btn-outline:hover {
+      background: var(--surface-subtle) !important;
+    }
+
+    .btn-theme {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-theme:hover {
+      background: var(--surface-subtle);
+      border-color: #94a3b8;
+    }
+
+    .rate-range-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding-top: 7px;
+      border-top: 1px dashed var(--border);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .range-stat.low {
+      color: var(--success);
+    }
+
+    .range-stat.high {
+      color: #dc2626;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -819,6 +951,11 @@
           <span id="syncBtnLabel">Perbarui Realtime BI</span>
         </button>
 
+        <button id="btnThemeToggle" class="btn-theme" onclick="toggleTheme()" title="Ganti Mode Gelap / Terang">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel">Mode Gelap</span>
+        </button>
+
         <div class="system-status">
           <div class="status-dot"></div>
           <div class="status-text">
@@ -954,11 +1091,27 @@
         <a href="preview_email.html" target="_blank" class="btn btn-outline">
           📧 Preview Format Email &nearr;
         </a>
-        <button onclick="copyEmailFormat()" class="btn btn-primary">
-          📋 Salin Format Email untuk Outlook
+        <button onclick="copyEmailFormat()" class="btn btn-outline">
+          📋 Salin Format Outlook
+        </button>
+        <button onclick="copyWhatsAppFormat()" class="btn btn-outline">
+          📲 Salin Format WhatsApp
+        </button>
+        <button onclick="exportToCSV()" class="btn btn-primary">
+          📥 Unduh Rekap Excel / CSV
         </button>
       </div>
     </div>
+
+    <!-- SUBTLE FOOTER WITH MARKETING CONTACT -->
+    <footer style="margin-top: 32px; padding: 22px 0 10px 0; text-align: center; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted);">
+      <div style="font-weight: 700; color: var(--text); margin-bottom: 6px;">
+        Sistem Monitoring Otomasi Kurs Bank Indonesia &bull; Nabel Sakha Group
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted); opacity: 0.85;">
+        Jika ada yang ingin ditanyakan, hubungi: <a href="mailto:marketing@nabelsakha.com" style="color: var(--primary); text-decoration: underline;">marketing@nabelsakha.com</a>
+      </div>
+    </footer>
 
   </div>
 
@@ -1013,6 +1166,16 @@
           trendHtml = `<span class="trend-pill trend-neutral">- Tetap</span>`;
         }
 
+        // Hitung nilai terendah & tertinggi dari riwayat
+        let historyVals = Object.values(historyData)
+          .map(d => (d[code] ? d[code].tengah : null))
+          .filter(v => v !== null && !isNaN(v));
+        if (historyVals.length === 0 && val.tengah) historyVals = [val.tengah];
+        const minVal = Math.min(...historyVals);
+        const maxVal = Math.max(...historyVals);
+        const minStr = minVal.toLocaleString('id-ID', { minimumFractionDigits: (code === 'JPY' || code === 'KRW' ? 2 : 0), maximumFractionDigits: 2 });
+        const maxStr = maxVal.toLocaleString('id-ID', { minimumFractionDigits: (code === 'JPY' || code === 'KRW' ? 2 : 0), maximumFractionDigits: 2 });
+
         const card = document.createElement('div');
         card.className = `currency-card ${isUsd ? 'usd-card' : ''}`;
         card.innerHTML = `
@@ -1034,6 +1197,12 @@
               <span class="split-label">Kurs Beli</span>
               <span class="split-val">${val.beli_str}</span>
             </div>
+          </div>
+
+          <div class="rate-range-row">
+            <span class="range-stat low" title="Kurs Tengah Terendah Periode">🟢 Min: ${minStr}</span>
+            <span class="range-dot">&bull;</span>
+            <span class="range-stat high" title="Kurs Tengah Tertinggi Periode">🔴 Max: ${maxStr}</span>
           </div>
         `;
         grid.appendChild(card);
@@ -1344,24 +1513,24 @@
           },
           scales: {
             x: {
-              grid: { color: '#f1f5f9' },
+              grid: { color: (document.documentElement.getAttribute('data-theme') === 'dark' ? '#23314d' : '#f1f5f9') },
               ticks: { 
-                color: '#64748b', 
+                color: (document.documentElement.getAttribute('data-theme') === 'dark' ? '#94a3b8' : '#64748b'), 
                 font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' }
               }
             },
             y: {
-              grid: { color: '#f1f5f9' },
+              grid: { color: (document.documentElement.getAttribute('data-theme') === 'dark' ? '#23314d' : '#f1f5f9') },
               suggestedMin: ySuggestedMin,
               suggestedMax: ySuggestedMax,
               title: {
                 display: true,
                 text: 'Kurs Tengah (IDR)',
-                color: '#64748b',
+                color: (document.documentElement.getAttribute('data-theme') === 'dark' ? '#94a3b8' : '#64748b'),
                 font: { family: 'Plus Jakarta Sans', size: 11, weight: '700' }
               },
               ticks: { 
-                color: '#64748b', 
+                color: (document.documentElement.getAttribute('data-theme') === 'dark' ? '#94a3b8' : '#64748b'), 
                 font: { family: 'JetBrains Mono', size: 11 },
                 callback: function(value) {
                   return Number(value).toLocaleString('id-ID');
@@ -1417,6 +1586,103 @@
       setTimeout(() => { toast.style.display = 'none'; }, 4000);
     }
 
+    // Toggle Tema Mode Gelap / Terang
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      try { localStorage.setItem('nsg_kurs_theme', next); } catch (e) {}
+
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (icon) icon.innerText = next === 'dark' ? '☀️' : '🌙';
+      if (label) label.innerText = next === 'dark' ? 'Mode Terang' : 'Mode Gelap';
+
+      renderChart();
+    }
+
+    // Unduh Rekap Data Kurs ke Format Excel / CSV
+    function exportToCSV() {
+      const monthMap = {
+        'januari': 1, 'februari': 2, 'maret': 3, 'april': 4,
+        'mei': 5, 'juni': 6, 'juli': 7, 'agustus': 8,
+        'september': 9, 'oktober': 10, 'november': 11, 'desember': 12
+      };
+      function parseDateMs(str) {
+        if (!str) return 0;
+        const p = str.trim().split(' ');
+        if (p.length >= 3) {
+          const d = parseInt(p[0]) || 1;
+          const m = monthMap[p[1].toLowerCase()] || 1;
+          const y = parseInt(p[2]) || 2026;
+          return new Date(y, m - 1, d).getTime();
+        }
+        return 0;
+      }
+
+      const sortedDates = Object.keys(historyData).sort((a, b) => parseDateMs(b) - parseDateMs(a));
+      // Tambahkan UTF-8 Byte Order Mark (BOM) agar Microsoft Excel membaca format dan karakter dengan rapi
+      let csv = '\uFEFFTanggal,Mata Uang,Kurs Jual (IDR),Kurs Beli (IDR),Kurs Tengah (IDR)\n';
+
+      sortedDates.forEach(date => {
+        const item = historyData[date];
+        ['USD', 'EUR', 'SGD', 'JPY', 'KRW'].forEach(code => {
+          if (item && item[code]) {
+            const row = item[code];
+            csv += `"${date}","${code}","${row.jual || 0}","${row.beli || 0}","${row.tengah || 0}"\n`;
+          }
+        });
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Rekap_Kurs_BI_Nabel_Sakha_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('✓ Berhasil mengunduh rekap kurs Excel / CSV!');
+    }
+
+    // Salin Format Teks Ringkas Khusus WhatsApp
+    function copyWhatsAppFormat() {
+      const tanggal = liveData.tanggal_bi || 'Hari Ini';
+      const jam = liveData.timestamp || '08:00 WIB';
+      const r = liveData.rates || {};
+
+      const usd = r.USD ? `Rp ${r.USD.tengah_str} (${r.USD.trend_text})` : '-';
+      const eur = r.EUR ? `Rp ${r.EUR.tengah_str} (${r.EUR.trend_text})` : '-';
+      const sgd = r.SGD ? `Rp ${r.SGD.tengah_str} (${r.SGD.trend_text})` : '-';
+      const jpy = r.JPY ? `Rp ${r.JPY.tengah_str} (${r.JPY.trend_text})` : '-';
+      const krw = r.KRW ? `Rp ${r.KRW.tengah_str} (${r.KRW.trend_text})` : '-';
+
+      const text = `*UPDATE KURS BANK INDONESIA - NABEL SAKHA GROUP*
+📅 ${tanggal} (${jam})
+
+🇺🇸 USD  : ${usd}
+🇪🇺 EUR  : ${eur}
+🇸🇬 SGD  : ${sgd}
+🇯🇵 JPY  : ${jpy}
+🇰🇷 KRW  : ${krw}
+
+📊 *Kalkulator & Grafik Realtime:*
+https://nsg-9roup.github.io/nsg-kurs/
+
+_Pertanyaan seputar kurs? Hubungi marketing@nabelsakha.com_`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('✓ Berhasil menyalin ringkasan WhatsApp ke clipboard!');
+        }).catch(() => {
+          fallbackCopyText(text);
+        });
+      } else {
+        fallbackCopyText(text);
+      }
+    }
+
     // Trigger Realtime Sync (Menghubungi app.py /api/sync)
     async function triggerRealtimeSync() {
       const btn = document.getElementById('btnSyncRealtime');
@@ -1464,6 +1730,19 @@
     }
 
     // Eksekusi awal
+    (function initTheme() {
+      try {
+        const saved = localStorage.getItem('nsg_kurs_theme');
+        if (saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          const icon = document.getElementById('themeIcon');
+          const label = document.getElementById('themeLabel');
+          if (icon) icon.innerText = '☀️';
+          if (label) label.innerText = 'Mode Terang';
+        }
+      } catch (e) {}
+    })();
+
     renderCurrencyCards();
     calculateConversion();
     renderAuditLogs();
