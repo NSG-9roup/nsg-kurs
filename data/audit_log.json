@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": "LOG-20261015-135848",
+    "tanggal_bi": "15 Oktober 2026",
+    "timestamp": "15/10/2026 13:58:48 WIB",
+    "recipients": [
+      "samsul@nabelsakha.com"
+    ],
+    "status": "FAILED",
+    "status_code": 500,
+    "message": "Gagal mengirim: (535, b'5.7.139 Authentication unsuccessful, SmtpClientAuthentication is disabled for the Tenant. Visit https://aka.ms/smtp_auth_disabled for more information. [DS7PR06CA0037.namprd06.prod.outlook.com 2026-10-15T06:58:48.109Z 08DF28F9555E0A4F]')",
+    "duration_seconds": 6.54
+  }
+]
