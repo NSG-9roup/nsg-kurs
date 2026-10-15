@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Monitoring Kurs BI - Nabel Sakha Group</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- LOAD REALTIME SCRAPED DATA DARI BANK INDONESIA -->
+  <script src="data/data.js"></script>
+
+  <style>
+    :root {
+      --primary: #ea580c;
+      --primary-dark: #c2410c;
+      --primary-light: #fff7ed;
+      --secondary: #dc2626;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border: #e2e8f0;
+      --border-focus: #ea580c;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 6px 16px rgba(15, 23, 42, 0.04);
+      --success: #15803d;
+      --success-bg: #f0fdf4;
+      --success-border: #bbf7d0;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      padding: 24px 20px 60px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* TOP NAVBAR */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-brand img {
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .nav-title h1 {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #0f172a;
+    }
+
+    .nav-title p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 30px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: #16a34a;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(22, 163, 74, 0.6);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .status-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .btn-sync {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ea580c;
+      color: #ffffff;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .btn-sync:hover {
+      background: #c2410c;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+    }
+
+    .btn-sync:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-sync svg {
+      transition: transform 0.6s ease;
+    }
+
+    .btn-sync.spinning svg {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* SECTION TITLE */
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .live-badge {
+      font-size: 12px;
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* REFINED CURRENCY GRID */
+    .currency-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 1100px) {
+      .currency-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+    }
+
+    .currency-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--card-shadow);
+      min-height: 185px;
+    }
+
+    .currency-card:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .currency-card.usd-card {
+      border: 2px solid #fed7aa;
+      background: linear-gradient(180deg, #ffffff 0%, #fff7ed 100%);
+    }
+
+    .currency-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .currency-code {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .currency-card.usd-card .currency-code {
+      color: #ea580c;
+    }
+
+    .trend-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    .trend-up {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+
+    .trend-down {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+    }
+
+    .trend-neutral {
+      background: var(--surface-subtle);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .tengah-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .tengah-val {
+      font-size: 24px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+
+    .currency-card.usd-card .tengah-val {
+      color: #0284c7;
+    }
+
+    /* 2-COLUMN BOTTOM JUAL / BELI */
+    .rate-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .split-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .split-col.right {
+      text-align: right;
+    }
+
+    .split-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .split-val {
+      font-size: 12px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: #1e293b;
+      white-space: nowrap;
+    }
+
+    /* MAIN CONTENT DUAL COLUMNS */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 960px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 290px;
+      width: 100%;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    /* CONVERTER CALCULATOR */
+    .converter-box {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-row input, .input-row select {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: #0f172a;
+      font-size: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 10px 14px;
+      border-radius: 8px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .input-row input:focus, .input-row select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+    }
+
+    .input-row input {
+      flex: 1;
+    }
+
+    .converter-result {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .result-label {
+      font-size: 12px;
+      color: #c2410c;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .result-amount {
+      font-size: 26px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #0f172a;
+    }
+
+    .result-detail {
+      font-size: 11px;
+      color: #9a3412;
+      font-weight: 600;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* AUDIT LOG TABLE */
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .log-table th {
+      text-align: left;
+      padding: 12px 14px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      background: #f8fafc;
+    }
+
+    .log-table td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      color: #334155;
+    }
+
+    .log-table tr:hover {
+      background: #f8fafc;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .status-success {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+    }
+
+    /* QUICK ACTIONS */
+    .actions-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      color: #334155;
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    /* TOAST NOTIFICATION */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #15803d;
+      color: #ffffff;
+      padding: 14px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 999;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- TOP NAVIGATION -->
+    <header class="navbar">
+      <div class="nav-brand">
+        <img src="https://i.imgur.com/jyix5CY.png" alt="Nabel Sakha Group Logo">
+        <div class="nav-title">
+          <h1>Monitoring Otomasi Kurs BI</h1>
+          <p>PT. Nabel Sakha Gemilang &bull; Internal Financial System</p>
+        </div>
+      </div>
+      
+      <div class="nav-actions">
+        <button id="btnSyncRealtime" class="btn-sync" onclick="triggerRealtimeSync()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          <span id="syncBtnLabel">Perbarui Realtime BI</span>
+        </button>
+
+        <div class="system-status">
+          <div class="status-dot"></div>
+          <div class="status-text">
+            Jadwal: <strong style="color: #ea580c;">08:00 WIB</strong>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- LIVE CURRENCY TICKERS HEADER -->
+    <div class="section-title">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="color: #ea580c;">●</span>
+        <span>Data Kurs Resmi Bank Indonesia</span>
+      </div>
+      <div class="live-badge" id="liveBadge">
+        ✓ REALTIME BI: <span id="labelTanggalBI">15 Oktober 2026</span> (<span id="labelJamBI">11:50 WIB</span>)
+      </div>
+    </div>
+
+    <!-- DYNAMIC CARDS CONTAINER (5 EQUAL COLUMNS) -->
+    <div class="currency-grid" id="currencyGrid">
+      <!-- Diisi secara dinamis oleh JavaScript -->
+    </div>
+
+    <!-- DUAL LAYOUT: CHART & CALCULATOR -->
+    <div class="dashboard-grid">
+      
+      <!-- Chart -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Grafik Pergerakan Kurs Tengah Resmi BI</div>
+          <span style="font-size: 12px; color: var(--text-muted);" id="chartSubtitle">Riwayat Terverifikasi</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="kursChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Quick Converter -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Kalkulator Valas Realtime</div>
+          <span style="font-size: 11px; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; padding: 2px 8px; border-radius: 12px; font-weight: 700;">Sales &amp; Purchasing</span>
+        </div>
+        
+        <div class="converter-box">
+          <div class="input-group">
+            <label>Nominal Valuta Asing</label>
+            <div class="input-row">
+              <input type="number" id="inputAmount" value="5000" min="1" step="any" oninput="calculateConversion()">
+              <select id="selectCurrency" onchange="calculateConversion()">
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="SGD">SGD (S$)</option>
+                <option value="JPY">JPY (¥)</option>
+                <option value="KRW">KRW (₩)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>Tipe Acuan Kurs</label>
+            <select id="selectRateType" onchange="calculateConversion()" style="background: #ffffff; border: 1px solid var(--border); color: #0f172a; padding: 10px; border-radius: 8px;">
+              <option value="jual">Kurs Jual (Standar Impor/Pembelian)</option>
+              <option value="tengah">Kurs Tengah (Acuan Laporan)</option>
+              <option value="beli">Kurs Beli</option>
+            </select>
+          </div>
+
+          <div class="converter-result">
+            <div class="result-label" id="resultLabel">Estimasi Nilai Tukar Rupiah (IDR):</div>
+            <div class="result-amount" id="resultDisplay">Rp 0</div>
+            <div class="result-detail" id="resultDetail">Acuan: Kurs Jual USD/IDR = Rp 17.987,49</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- AUDIT LOG TABLE -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Log Audit Riwayat Pengiriman Email</div>
+        <span style="font-size: 12px; color: var(--text-muted);">Tercatat Otomatis oleh Sistem</span>
+      </div>
+
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>Waktu Eksekusi</th>
+            <th>Tanggal Kurs BI</th>
+            <th>Daftar Penerima</th>
+            <th>Status</th>
+            <th>Durasi</th>
+            <th>Keterangan</th>
+          </tr>
+        </thead>
+        <tbody id="logTableBody">
+          <!-- Diisi secara dinamis dari data.js -->
+        </tbody>
+      </table>
+
+      <!-- ACTION BUTTONS -->
+      <div class="actions-bar">
+        <a href="https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx" target="_blank" class="btn btn-outline">
+          🌐 Buka Web Bank Indonesia Resmi &nearr;
+        </a>
+        <a href="preview_email.html" target="_blank" class="btn btn-outline">
+          📧 Preview Format Email &nearr;
+        </a>
+        <button onclick="copyEmailFormat()" class="btn btn-primary">
+          📋 Salin Format Email untuk Outlook
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toastMessage">
+    Berhasil menyalin format email ke clipboard! Silakan paste ke Outlook Anda.
+  </div>
+
+  <script>
+    // Inisialisasi data realtime dari window.LATEST_KURS_DATA (data.js)
+    let liveData = window.LATEST_KURS_DATA || { rates: {} };
+    let historyData = window.HISTORY_DATA || {};
+    let auditLogs = window.AUDIT_LOG_DATA || [];
+    let kursChartInstance = null;
+
+    // Helper format tanggal pendek untuk grafik: "15 Oktober 2026" -> "15 Okt"
+    function formatShortDate(fullDate) {
+      if (!fullDate) return '';
+      const months = {
+        'Januari': 'Jan', 'Februari': 'Feb', 'Maret': 'Mar', 'April': 'Apr',
+        'Mei': 'Mei', 'Juni': 'Jun', 'Juli': 'Jul', 'Agustus': 'Agt',
+        'September': 'Sep', 'Oktober': 'Okt', 'November': 'Nov', 'Desember': 'Des'
+      };
+      const parts = fullDate.trim().split(' ');
+      if (parts.length >= 2 && months[parts[1]]) {
+        return `${parts[0]} ${months[parts[1]]}`;
+      }
+      return fullDate;
+    }
+
+    // Render 5 Kartu Valas dengan Layout Rapi Simetris
+    function renderCurrencyCards() {
+      const grid = document.getElementById('currencyGrid');
+      grid.innerHTML = '';
+
+      if (liveData.tanggal_bi) {
+        document.getElementById('labelTanggalBI').innerText = liveData.tanggal_bi;
+        document.getElementById('labelJamBI').innerText = liveData.timestamp || '08:00 WIB';
+      }
+
+      const currencyOrder = ['USD', 'EUR', 'SGD', 'JPY', 'KRW'];
+      currencyOrder.forEach(code => {
+        const val = liveData.rates[code];
+        if (!val) return;
+
+        const isUsd = (code === 'USD');
+        let trendHtml = '';
+        if (val.trend_icon === '▲') {
+          trendHtml = `<span class="trend-pill trend-up">▲ ${val.trend_text}</span>`;
+        } else if (val.trend_icon === '▼') {
+          trendHtml = `<span class="trend-pill trend-down">▼ ${val.trend_text}</span>`;
+        } else {
+          trendHtml = `<span class="trend-pill trend-neutral">- Tetap</span>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = `currency-card ${isUsd ? 'usd-card' : ''}`;
+        card.innerHTML = `
+          <div>
+            <div class="currency-header">
+              <span class="currency-code">${code} / IDR</span>
+              ${trendHtml}
+            </div>
+            <div class="tengah-label">Kurs Tengah Resmi</div>
+            <div class="tengah-val">${val.tengah_str}</div>
+          </div>
+          
+          <div class="rate-split">
+            <div class="split-col">
+              <span class="split-label">Kurs Jual</span>
+              <span class="split-val">${val.jual_str}</span>
+            </div>
+            <div class="split-col right">
+              <span class="split-label">Kurs Beli</span>
+              <span class="split-val">${val.beli_str}</span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Kalkulator Konversi Realtime dengan Rincian Transparansi
+    function calculateConversion() {
+      const amount = parseFloat(document.getElementById('inputAmount').value) || 0;
+      const cur = document.getElementById('selectCurrency').value;
+      const rateType = document.getElementById('selectRateType').value;
+
+      if (liveData.rates && liveData.rates[cur]) {
+        const rate = liveData.rates[cur][rateType];
+        const total = amount * rate;
+        document.getElementById('resultDisplay').innerText = "Rp " + total.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+        const typeLabels = { 'jual': 'Kurs Jual', 'tengah': 'Kurs Tengah', 'beli': 'Kurs Beli' };
+        const rateStr = liveData.rates[cur][rateType + '_str'] || rate.toLocaleString('id-ID', { minimumFractionDigits: 2 });
+        document.getElementById('resultDetail').innerText = `Acuan: ${typeLabels[rateType]} ${cur} = Rp ${rateStr} (Bank Indonesia ${liveData.tanggal_bi || ''})`;
+      }
+    }
+
+    // Render Log Audit
+    function renderAuditLogs() {
+      const logTbody = document.getElementById('logTableBody');
+      logTbody.innerHTML = '';
+      if (auditLogs && auditLogs.length > 0) {
+        auditLogs.forEach(item => {
+          const recList = Array.isArray(item.recipients) ? item.recipients.map(r => `<code>${r}</code>`).join(', ') : item.recipients;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${item.timestamp}</strong></td>
+            <td>${item.tanggal_bi}</td>
+            <td>${recList}</td>
+            <td><span class="status-badge status-success">● ${item.status} (${item.status_code || 200})</span></td>
+            <td>${item.duration_seconds || '3.5'} detik</td>
+            <td>${item.message}</td>
+          `;
+          logTbody.appendChild(tr);
+        });
+      } else {
+        logTbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 36px 16px;">
+              <div style="font-size: 22px; margin-bottom: 6px;">📋</div>
+              <div style="font-weight: 700; color: #1e293b; font-size: 14px; margin-bottom: 4px;">Belum Ada Riwayat Pengiriman Email</div>
+              <div style="font-size: 12px; color: #64748b; max-width: 480px; margin: 0 auto; line-height: 1.5;">
+                Log audit akan otomatis tercatat nyata di sini detik per detik begitu script <code>main.py</code> mengirim email laporan via server SMTP.
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    // Render Chart.js dengan Sumbu Presisi dan Label Rapi
+    function renderChart() {
+      const monthMap = {
+        'januari': 1, 'februari': 2, 'maret': 3, 'april': 4,
+        'mei': 5, 'juni': 6, 'juli': 7, 'agustus': 8,
+        'september': 9, 'oktober': 10, 'november': 11, 'desember': 12
+      };
+      function parseDateMs(str) {
+        if (!str) return 0;
+        const p = str.trim().split(' ');
+        if (p.length >= 3) {
+          const d = parseInt(p[0]) || 1;
+          const m = monthMap[p[1].toLowerCase()] || 1;
+          const y = parseInt(p[2]) || 2026;
+          return new Date(y, m - 1, d).getTime();
+        }
+        return 0;
+      }
+
+      // Pastikan urutan tanggal di sumbu X selalu kronologis
+      const rawLabels = Object.keys(historyData).sort((a, b) => parseDateMs(a) - parseDateMs(b));
+      const displayLabels = rawLabels.length > 0 
+        ? rawLabels.map(formatShortDate) 
+        : [formatShortDate(liveData.tanggal_bi || 'Hari Ini')];
+
+      const usdPoints = rawLabels.map(d => (historyData[d].USD ? historyData[d].USD.tengah : null));
+      const eurPoints = rawLabels.map(d => (historyData[d].EUR ? historyData[d].EUR.tengah : null));
+      const sgdPoints = rawLabels.map(d => (historyData[d].SGD ? historyData[d].SGD.tengah : null));
+
+      const ctx = document.getElementById('kursChart').getContext('2d');
+      if (kursChartInstance) {
+        kursChartInstance.destroy();
+      }
+
+      kursChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: displayLabels,
+          datasets: [
+            {
+              label: 'USD / IDR',
+              data: usdPoints.length > 0 ? usdPoints : [liveData.rates.USD ? liveData.rates.USD.tengah : 17898],
+              borderColor: '#ea580c',
+              backgroundColor: 'rgba(234, 88, 12, 0.08)',
+              fill: true,
+              tension: 0.25,
+              borderWidth: 2.5,
+              pointRadius: 5,
+              pointHoverRadius: 7,
+              pointBackgroundColor: '#ea580c'
+            },
+            {
+              label: 'EUR / IDR',
+              data: eurPoints.length > 0 ? eurPoints : [liveData.rates.EUR ? liveData.rates.EUR.tengah : 20043],
+              borderColor: '#0284c7',
+              backgroundColor: 'transparent',
+              tension: 0.25,
+              borderWidth: 2,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#0284c7'
+            },
+            {
+              label: 'SGD / IDR',
+              data: sgdPoints.length > 0 ? sgdPoints : [liveData.rates.SGD ? liveData.rates.SGD.tengah : 13968],
+              borderColor: '#16a34a',
+              backgroundColor: 'transparent',
+              tension: 0.25,
+              borderWidth: 2,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#16a34a'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              left: 12,
+              right: 12,
+              top: 4,
+              bottom: 4
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { 
+                color: '#475569', 
+                font: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
+                padding: 16
+              }
+            },
+            tooltip: {
+              padding: 12,
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              titleFont: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
+              bodyFont: { family: 'JetBrains Mono', size: 12 },
+              callbacks: {
+                label: function(context) {
+                  return ` ${context.dataset.label}: Rp ${Number(context.raw).toLocaleString('id-ID', { minimumFractionDigits: 2 })}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: '#f1f5f9' },
+              ticks: { 
+                color: '#64748b', 
+                font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' }
+              }
+            },
+            y: {
+              grid: { color: '#f1f5f9' },
+              title: {
+                display: true,
+                text: 'Kurs Tengah (IDR)',
+                color: '#64748b',
+                font: { family: 'Plus Jakarta Sans', size: 11, weight: '700' }
+              },
+              ticks: { 
+                color: '#64748b', 
+                font: { family: 'JetBrains Mono', size: 11 },
+                callback: function(value) {
+                  return Number(value).toLocaleString('id-ID');
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Salin Format Email (CORS-Safe + Rich HTML Clipboard untuk Microsoft Outlook)
+    function copyEmailFormat() {
+      const emailContent = window.EMAIL_HTML;
+      if (!emailContent) {
+        showToast('Konten email belum siap. Silakan klik tombol perbarui realtime.');
+        return;
+      }
+
+      // Gunakan modern ClipboardItem dengan format HTML agar Outlook menerima styling tabel
+      if (navigator.clipboard && window.ClipboardItem) {
+        const textBlob = new Blob([emailContent], { type: 'text/plain' });
+        const htmlBlob = new Blob([emailContent], { type: 'text/html' });
+        const item = new ClipboardItem({
+          'text/plain': textBlob,
+          'text/html': htmlBlob
+        });
+
+        navigator.clipboard.write([item]).then(() => {
+          showToast('✓ Berhasil menyalin format tabel Outlook ke clipboard!');
+        }).catch(err => {
+          fallbackCopyText(emailContent);
+        });
+      } else {
+        fallbackCopyText(emailContent);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('✓ Berhasil menyalin kode email ke clipboard!');
+        }).catch(() => {
+          alert('Gagal menyalin otomatis. Silakan buka file preview_email.html lalu salin langsung.');
+        });
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toastMessage');
+      toast.innerText = message;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+
+    // Trigger Realtime Sync (Menghubungi app.py /api/sync)
+    async function triggerRealtimeSync() {
+      const btn = document.getElementById('btnSyncRealtime');
+      const label = document.getElementById('syncBtnLabel');
+      
+      btn.disabled = true;
+      btn.classList.add('spinning');
+      label.innerText = 'Mengambil data BI...';
+
+      // Coba panggil server lokal (app.py)
+      const endpoints = ['/api/sync', 'http://localhost:5000/api/sync'];
+      let synced = false;
+
+      for (const endpoint of endpoints) {
+        try {
+          const res = await fetch(endpoint, { method: 'GET', cache: 'no-store' });
+          if (res.ok) {
+            const result = await res.json();
+            if (result.success && result.rates) {
+              liveData.rates = result.rates;
+              liveData.tanggal_bi = result.tanggal_bi;
+              liveData.timestamp = result.timestamp;
+              
+              renderCurrencyCards();
+              calculateConversion();
+              renderChart();
+              showToast(`✓ Berhasil memperbarui data realtime BI: ${result.tanggal_bi}!`);
+              synced = true;
+              break;
+            }
+          }
+        } catch (e) {
+          // Endpoint tidak dapat dihubungi, lanjut ke fallback
+        }
+      }
+
+      if (!synced) {
+        // Jika dibuka lewat file:/// dan app.py belum menyala
+        showToast('ℹ️ Server lokal belum aktif. Jalankan "python app.py" di terminal untuk sinkronisasi 1-klik!');
+      }
+
+      btn.disabled = false;
+      btn.classList.remove('spinning');
+      label.innerText = 'Perbarui Realtime BI';
+    }
+
+    // Eksekusi awal
+    renderCurrencyCards();
+    calculateConversion();
+    renderAuditLogs();
+    renderChart();
+  </script>
+
+</body>
+</html>
