@@ -379,6 +379,39 @@
       padding-right: 10px;
     }
 
+    /* CHART FILTER PILLS */
+    .range-pills {
+      display: inline-flex;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 8px;
+      gap: 2px;
+      border: 1px solid var(--border);
+    }
+
+    .pill-btn {
+      border: none;
+      background: transparent;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .pill-btn:hover {
+      color: #0f172a;
+    }
+
+    .pill-btn.active {
+      background: #ffffff;
+      color: #ea580c;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
     /* CONVERTER CALCULATOR */
     .converter-box {
       display: flex;
@@ -810,10 +843,33 @@
       
       <!-- Chart -->
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">Grafik Pergerakan Kurs Tengah Resmi BI</div>
-          <span style="font-size: 12px; color: var(--text-muted);" id="chartSubtitle">Riwayat Terverifikasi</span>
+        <div class="card-header" style="flex-wrap: wrap; gap: 12px; align-items: center;">
+          <div>
+            <div class="card-title">Grafik Pergerakan Kurs Tengah BI</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;" id="chartSubtitle">Tren Historis Resmi Bank Indonesia</div>
+          </div>
+
+          <!-- Controls: Mata Uang & Rentang Waktu -->
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <!-- Select Mata Uang -->
+            <select id="chartCurrencyFilter" onchange="updateChartCurrencyFilter(this.value)" style="background: #ffffff; border: 1px solid var(--border); color: #0f172a; font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 8px; outline: none; cursor: pointer;">
+              <option value="USD" selected>Hanya USD ($)</option>
+              <option value="EUR">Hanya EUR (€)</option>
+              <option value="SGD">Hanya SGD (S$)</option>
+              <option value="JPY">Hanya JPY (¥)</option>
+              <option value="KRW">Hanya KRW (₩)</option>
+              <option value="ALL">Perbandingan (USD, EUR, SGD)</option>
+            </select>
+
+            <!-- Quick Range Pills -->
+            <div class="range-pills" id="rangePills">
+              <button class="pill-btn" data-days="7" onclick="setChartRange(7, this)">7 Hari</button>
+              <button class="pill-btn active" data-days="14" onclick="setChartRange(14, this)">14 Hari</button>
+              <button class="pill-btn" data-days="all" onclick="setChartRange('all', this)">Semua</button>
+            </div>
+          </div>
         </div>
+
         <div class="chart-container">
           <canvas id="kursChart"></canvas>
         </div>
@@ -1068,7 +1124,23 @@
       }
     }
 
-    // Render Chart.js dengan Sumbu Presisi dan Label Rapi
+    // Filter Interaktif Grafik
+    let currentChartRange = 14;
+    let currentChartCurrency = 'USD';
+
+    function setChartRange(days, btn) {
+      currentChartRange = days;
+      document.querySelectorAll('#rangePills .pill-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderChart();
+    }
+
+    function updateChartCurrencyFilter(curr) {
+      currentChartCurrency = curr;
+      renderChart();
+    }
+
+    // Render Chart.js dengan Sumbu Dinamis Presisi, Kurva Bergelombang & Filter Fleksibel
     function renderChart() {
       const monthMap = {
         'januari': 1, 'februari': 2, 'maret': 3, 'april': 4,
@@ -1088,14 +1160,93 @@
       }
 
       // Pastikan urutan tanggal di sumbu X selalu kronologis
-      const rawLabels = Object.keys(historyData).sort((a, b) => parseDateMs(a) - parseDateMs(b));
+      let rawLabels = Object.keys(historyData).sort((a, b) => parseDateMs(a) - parseDateMs(b));
+
+      // Filter rentang hari jika dipilih (7 hari, 14 hari, atau semua)
+      if (currentChartRange !== 'all') {
+        const days = parseInt(currentChartRange) || 14;
+        rawLabels = rawLabels.slice(-days);
+      }
+
       const displayLabels = rawLabels.length > 0 
         ? rawLabels.map(formatShortDate) 
         : [formatShortDate(liveData.tanggal_bi || 'Hari Ini')];
 
-      const usdPoints = rawLabels.map(d => (historyData[d].USD ? historyData[d].USD.tengah : null));
-      const eurPoints = rawLabels.map(d => (historyData[d].EUR ? historyData[d].EUR.tengah : null));
-      const sgdPoints = rawLabels.map(d => (historyData[d].SGD ? historyData[d].SGD.tengah : null));
+      // Styling palet warna & label mata uang
+      const curConfig = {
+        'USD': { label: 'USD / IDR', color: '#ea580c', bg: 'rgba(234, 88, 12, 0.12)', name: 'US Dollar' },
+        'EUR': { label: 'EUR / IDR', color: '#0284c7', bg: 'rgba(2, 132, 199, 0.12)', name: 'Euro' },
+        'SGD': { label: 'SGD / IDR', color: '#16a34a', bg: 'rgba(22, 163, 74, 0.12)', name: 'Singapore Dollar' },
+        'JPY': { label: 'JPY / IDR', color: '#9333ea', bg: 'rgba(147, 51, 234, 0.12)', name: 'Japanese Yen' },
+        'KRW': { label: 'KRW / IDR', color: '#e11d48', bg: 'rgba(225, 29, 72, 0.12)', name: 'Korean Won' }
+      };
+
+      const subtitleEl = document.getElementById('chartSubtitle');
+      let datasets = [];
+      let ySuggestedMin = undefined;
+      let ySuggestedMax = undefined;
+
+      if (currentChartCurrency === 'ALL') {
+        if (subtitleEl) subtitleEl.innerText = `Perbandingan Multi-Valas (${displayLabels.length} Hari Kerja Terakhir)`;
+
+        ['USD', 'EUR', 'SGD'].forEach(c => {
+          const cfg = curConfig[c];
+          const pts = rawLabels.map(d => (historyData[d] && historyData[d][c] ? historyData[d][c].tengah : null));
+          datasets.push({
+            label: cfg.label,
+            data: pts.length > 0 ? pts : [liveData.rates[c] ? liveData.rates[c].tengah : null],
+            borderColor: cfg.color,
+            backgroundColor: 'transparent',
+            tension: 0.35,
+            borderWidth: c === 'USD' ? 2.5 : 2,
+            pointRadius: 4,
+            pointHoverRadius: 7,
+            pointBackgroundColor: cfg.color
+          });
+        });
+
+        const allValues = datasets.flatMap(ds => ds.data.filter(v => v !== null));
+        if (allValues.length > 0) {
+          const minVal = Math.min(...allValues);
+          const maxVal = Math.max(...allValues);
+          const pad = (maxVal - minVal) * 0.08;
+          ySuggestedMin = Math.floor(minVal - pad);
+          ySuggestedMax = Math.ceil(maxVal + pad);
+        }
+      } else {
+        const cur = currentChartCurrency;
+        const cfg = curConfig[cur] || curConfig['USD'];
+        if (subtitleEl) subtitleEl.innerText = `Tren Dinamis ${cfg.name} (${displayLabels.length} Hari Kerja Terakhir)`;
+
+        const points = rawLabels.map(d => (historyData[d] && historyData[d][cur] ? historyData[d][cur].tengah : null));
+        const validPoints = points.filter(v => v !== null && !isNaN(v));
+
+        datasets.push({
+          label: cfg.label,
+          data: points.length > 0 ? points : [liveData.rates[cur] ? liveData.rates[cur].tengah : 17898],
+          borderColor: cfg.color,
+          backgroundColor: cfg.bg,
+          fill: true,
+          tension: 0.38, // Kurva halus bergelombang (tidak kaku/garis lurus)
+          borderWidth: 2.8,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          pointBackgroundColor: cfg.color,
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2
+        });
+
+        // KUNCI: Skala sumbu Y mengapit nilai min/max dengan batas yang proporsional
+        // sehingga fluktuasi harian tampak bergelombang dinamis & hidup layaknya terminal finansial
+        if (validPoints.length > 0) {
+          const minVal = Math.min(...validPoints);
+          const maxVal = Math.max(...validPoints);
+          const diff = maxVal - minVal || (maxVal * 0.01);
+          const pad = diff * 0.35;
+          ySuggestedMin = Math.max(0, Math.floor(minVal - pad));
+          ySuggestedMax = Math.ceil(maxVal + pad);
+        }
+      }
 
       const ctx = document.getElementById('kursChart').getContext('2d');
       if (kursChartInstance) {
@@ -1106,56 +1257,21 @@
         type: 'line',
         data: {
           labels: displayLabels,
-          datasets: [
-            {
-              label: 'USD / IDR',
-              data: usdPoints.length > 0 ? usdPoints : [liveData.rates.USD ? liveData.rates.USD.tengah : 17898],
-              borderColor: '#ea580c',
-              backgroundColor: 'rgba(234, 88, 12, 0.08)',
-              fill: true,
-              tension: 0.25,
-              borderWidth: 2.5,
-              pointRadius: 5,
-              pointHoverRadius: 7,
-              pointBackgroundColor: '#ea580c'
-            },
-            {
-              label: 'EUR / IDR',
-              data: eurPoints.length > 0 ? eurPoints : [liveData.rates.EUR ? liveData.rates.EUR.tengah : 20043],
-              borderColor: '#0284c7',
-              backgroundColor: 'transparent',
-              tension: 0.25,
-              borderWidth: 2,
-              pointRadius: 4,
-              pointHoverRadius: 6,
-              pointBackgroundColor: '#0284c7'
-            },
-            {
-              label: 'SGD / IDR',
-              data: sgdPoints.length > 0 ? sgdPoints : [liveData.rates.SGD ? liveData.rates.SGD.tengah : 13968],
-              borderColor: '#16a34a',
-              backgroundColor: 'transparent',
-              tension: 0.25,
-              borderWidth: 2,
-              pointRadius: 4,
-              pointHoverRadius: 6,
-              pointBackgroundColor: '#16a34a'
-            }
-          ]
+          datasets: datasets
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           layout: {
-            padding: {
-              left: 12,
-              right: 12,
-              top: 4,
-              bottom: 4
-            }
+            padding: { left: 12, right: 12, top: 10, bottom: 4 }
+          },
+          interaction: {
+            mode: 'index',
+            intersect: false
           },
           plugins: {
             legend: {
+              display: (currentChartCurrency === 'ALL'),
               labels: { 
                 color: '#475569', 
                 font: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
@@ -1164,12 +1280,13 @@
             },
             tooltip: {
               padding: 12,
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'rgba(15, 23, 42, 0.92)',
               titleFont: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
               bodyFont: { family: 'JetBrains Mono', size: 12 },
               callbacks: {
                 label: function(context) {
-                  return ` ${context.dataset.label}: Rp ${Number(context.raw).toLocaleString('id-ID', { minimumFractionDigits: 2 })}`;
+                  const val = context.raw;
+                  return ` ${context.dataset.label}: Rp ${Number(val).toLocaleString('id-ID', { minimumFractionDigits: 2 })}`;
                 }
               }
             }
@@ -1184,6 +1301,8 @@
             },
             y: {
               grid: { color: '#f1f5f9' },
+              suggestedMin: ySuggestedMin,
+              suggestedMax: ySuggestedMax,
               title: {
                 display: true,
                 text: 'Kurs Tengah (IDR)',
