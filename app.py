@@ -126,20 +126,33 @@ def find_open_port(start=5000):
                 return p
     return start
 
+def get_local_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return '127.0.0.1'
+
 def main():
     global PORT
     PORT = find_open_port(5000)
-    server_address = ('127.0.0.1', PORT)
+    server_address = ('0.0.0.0', PORT)
     httpd = HTTPServer(server_address, KursAppHandler)
+    local_ip = get_local_ip()
 
-    url = f"http://localhost:{PORT}"
-    print("=" * 60)
+    url_local = f"http://localhost:{PORT}"
+    url_network = f"http://{local_ip}:{PORT}"
+    print("=" * 65)
     print(f"[*] SERVER MONITORING KURS BI - PT. NABEL SAKHA GEMILANG")
-    print("=" * 60)
-    print(f"[*] Dashboard aktif di        : {url}")
-    print(f"[*] Sinkronisasi Realtime API : {url}/api/sync")
+    print("=" * 65)
+    print(f"[*] Dashboard (Laptop Anda)      : {url_local}")
+    print(f"[*] Dashboard (Teman Satu Kantor): {url_network}")
+    print(f"[*] Sinkronisasi Realtime API    : {url_local}/api/sync")
     print(f"[*] Tekan Ctrl+C untuk menghentikan server.")
-    print("=" * 60 + "\n")
+    print("=" * 65 + "\n")
 
     # Buka otomatis di browser
     if "--no-browser" not in sys.argv:
