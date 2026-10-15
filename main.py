@@ -166,12 +166,16 @@ def main():
     parser.add_argument("--to", type=str, help="Email tujuan spesifik (opsional)")
     args = parser.parse_args()
 
+    success = True
     if args.sync:
         sync_data()
     elif args.poll:
-        run_smart_polling()
+        success = run_smart_polling()
     else:
-        run_immediate_send(recipient=args.to)
+        success = run_immediate_send(recipient=args.to)
+
+    if not success and not args.sync:
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
