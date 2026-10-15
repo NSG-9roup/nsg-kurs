@@ -883,10 +883,19 @@
         </div>
         
         <div class="converter-box">
+          <!-- Arah Konversi (2 Arah: Valas -> IDR atau IDR -> Valas) -->
           <div class="input-group">
-            <label>Nominal Valuta Asing</label>
+            <label>Arah Konversi</label>
+            <div class="range-pills" style="width: 100%; display: flex; background: #f1f5f9; padding: 3px; border-radius: 8px;">
+              <button type="button" class="pill-btn active" id="btnDirValasToIdr" onclick="setConversionDirection('VALAS_TO_IDR')" style="flex: 1; text-align: center; padding: 6px 4px;">Valas ➔ IDR</button>
+              <button type="button" class="pill-btn" id="btnDirIdrToValas" onclick="setConversionDirection('IDR_TO_VALAS')" style="flex: 1; text-align: center; padding: 6px 4px;">IDR ➔ Valas</button>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label id="labelInputAmount">Nominal Valuta Asing</label>
             <div class="input-row">
-              <input type="number" id="inputAmount" value="5000" min="1" step="any" oninput="calculateConversion()">
+              <input type="number" id="inputAmount" value="5000" min="0" step="any" oninput="calculateConversion()">
               <select id="selectCurrency" onchange="calculateConversion()">
                 <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
@@ -900,9 +909,9 @@
           <div class="input-group">
             <label>Tipe Acuan Kurs</label>
             <select id="selectRateType" onchange="calculateConversion()" style="background: #ffffff; border: 1px solid var(--border); color: #0f172a; padding: 10px; border-radius: 8px;">
-              <option value="jual">Kurs Jual (Standar Impor/Pembelian)</option>
-              <option value="tengah">Kurs Tengah (Acuan Laporan)</option>
-              <option value="beli">Kurs Beli</option>
+              <option value="jual">Kurs Jual (Standar Impor/Beli Valas)</option>
+              <option value="tengah">Kurs Tengah (Acuan Laporan Finansial)</option>
+              <option value="beli">Kurs Beli (Tukar Valas ke Rupiah)</option>
             </select>
           </div>
 
@@ -1025,20 +1034,56 @@
       });
     }
 
-    // Kalkulator Konversi Realtime dengan Rincian Transparansi
+    // Mode Arah Konversi: 'VALAS_TO_IDR' atau 'IDR_TO_VALAS'
+    let conversionDirection = 'VALAS_TO_IDR';
+
+    function setConversionDirection(dir) {
+      conversionDirection = dir;
+      const btnValas = document.getElementById('btnDirValasToIdr');
+      const btnIdr = document.getElementById('btnDirIdrToValas');
+      const labelInput = document.getElementById('labelInputAmount');
+      const inputAmount = document.getElementById('inputAmount');
+
+      if (dir === 'VALAS_TO_IDR') {
+        if (btnValas) btnValas.classList.add('active');
+        if (btnIdr) btnIdr.classList.remove('active');
+        if (labelInput) labelInput.innerText = 'Nominal Valuta Asing';
+        if (inputAmount && inputAmount.value === '100000000') inputAmount.value = '5000';
+      } else {
+        if (btnValas) btnValas.classList.remove('active');
+        if (btnIdr) btnIdr.classList.add('active');
+        if (labelInput) labelInput.innerText = 'Nominal Rupiah (IDR)';
+        if (inputAmount && inputAmount.value === '5000') inputAmount.value = '100000000';
+      }
+      calculateConversion();
+    }
+
+    // Kalkulator Konversi Realtime Presisi 2 Arah (Valas ⇄ IDR)
     function calculateConversion() {
       const amount = parseFloat(document.getElementById('inputAmount').value) || 0;
       const cur = document.getElementById('selectCurrency').value;
       const rateType = document.getElementById('selectRateType').value;
+      const curSymbols = { 'USD': '$', 'EUR': '€', 'SGD': 'S$', 'JPY': '¥', 'KRW': '₩' };
 
       if (liveData.rates && liveData.rates[cur]) {
-        const rate = liveData.rates[cur][rateType];
-        const total = amount * rate;
-        document.getElementById('resultDisplay').innerText = "Rp " + total.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-
+        const rate = liveData.rates[cur][rateType] || 1;
         const typeLabels = { 'jual': 'Kurs Jual', 'tengah': 'Kurs Tengah', 'beli': 'Kurs Beli' };
         const rateStr = liveData.rates[cur][rateType + '_str'] || rate.toLocaleString('id-ID', { minimumFractionDigits: 2 });
-        document.getElementById('resultDetail').innerText = `Acuan: ${typeLabels[rateType]} ${cur} = Rp ${rateStr} (Bank Indonesia ${liveData.tanggal_bi || ''})`;
+        const tanggalStr = liveData.tanggal_bi ? `Bank Indonesia ${liveData.tanggal_bi}` : 'Bank Indonesia';
+
+        if (conversionDirection === 'VALAS_TO_IDR') {
+          const total = amount * rate;
+          document.getElementById('resultLabel').innerText = 'Estimasi Nilai Tukar Rupiah (IDR):';
+          document.getElementById('resultDisplay').innerText = "Rp " + total.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+          document.getElementById('resultDetail').innerText = `Acuan: ${typeLabels[rateType]} 1 ${cur} = Rp ${rateStr} (${tanggalStr})`;
+        } else {
+          // IDR ke Valas
+          const totalValas = rate > 0 ? (amount / rate) : 0;
+          const symbol = curSymbols[cur] || cur;
+          document.getElementById('resultLabel').innerText = `Estimasi Valuta Asing (${cur}) Diperoleh:`;
+          document.getElementById('resultDisplay').innerText = `${symbol} ` + totalValas.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          document.getElementById('resultDetail').innerText = `Acuan: ${typeLabels[rateType]} 1 ${cur} = Rp ${rateStr} (${tanggalStr})`;
+        }
       }
     }
 
