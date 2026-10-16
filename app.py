@@ -157,7 +157,7 @@ def main():
     # Buka otomatis di browser
     if "--no-browser" not in sys.argv:
         try:
-            webbrowser.open(url)
+            webbrowser.open(url_local)
         except Exception:
             pass
 

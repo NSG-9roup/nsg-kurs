@@ -32,6 +32,24 @@ def get_today_id_string():
     now = datetime.now(WIB)
     return f"{now.day} {BULAN_ID[now.month]} {now.year}"
 
+def is_already_sent_today():
+    """Mengecek apakah email untuk tanggal hari ini sudah pernah berhasil dikirim."""
+    today_str = get_today_id_string()
+    now_wib = datetime.now(WIB).strftime("%d/%m/%Y")
+    if os.path.exists(LOG_FILE):
+        try:
+            with open(LOG_FILE, 'r', encoding='utf-8') as f:
+                logs = json.load(f)
+            for entry in logs:
+                if entry.get("status") == "SUCCESS":
+                    if today_str.lower() in entry.get("tanggal_bi", "").lower():
+                        return True
+                    if entry.get("timestamp", "").startswith(now_wib):
+                        return True
+        except Exception:
+            pass
+    return False
+
 def record_audit_log(tanggal_bi, recipients, status, message, duration):
     """Mencatat bukti riwayat pengiriman ke data/audit_log.json."""
     logs = []
@@ -122,6 +140,16 @@ def run_smart_polling(max_minutes=45, interval_seconds=300):
     - Begitu rilis, kirimkan email satu kali dan selesai.
     """
     today_str = get_today_id_string()
+    
+    # Cek apakah hari ini sudah pernah berhasil kirim email (mencegah email ganda pada jadwal cadangan)
+    if is_already_sent_today():
+        print(f"\n==========================================")
+        print(f"[+] Laporan kurs hari ini ({today_str}) SUDAH BERHASIL dikirim sebelumnya.")
+        print(f"[*] Jadwal cadangan otomatis dilewati untuk mencegah pengiriman ganda.")
+        print(f"==========================================")
+        sync_data()
+        return True
+
     print(f"\n==========================================")
     print(f"[*] Mode Smart Polling Aktif")
     print(f"[*] Menunggu rilis data BI untuk: {today_str}")
