@@ -1800,43 +1800,90 @@ _Untuk informasi lebih lanjut: marketing@nabelsakha.com_`;
       }
     }
 
-    // Trigger Realtime Sync (Menghubungi app.py /api/sync)
+    // Trigger Realtime Sync / Refresh Data
     async function triggerRealtimeSync() {
       const btn = document.getElementById('btnSyncRealtime');
       
       btn.disabled = true;
       btn.classList.add('spinning');
 
-      // Coba panggil server lokal (app.py)
-      const endpoints = ['/api/sync', 'http://localhost:5000/api/sync'];
+      const isOnline = window.location.hostname.includes('github.io') || 
+                       (window.location.protocol.startsWith('http') && !['localhost', '127.0.0.1'].includes(window.location.hostname));
+
       let synced = false;
 
-      for (const endpoint of endpoints) {
+      // 1. Jika di GitHub Pages (Online), ambil data/data.js terbaru dari GitHub (cache-busting)
+      if (isOnline) {
         try {
-          const res = await fetch(endpoint, { method: 'GET', cache: 'no-store' });
+          const res = await fetch(`data/data.js?_=${Date.now()}`, { cache: 'no-store' });
           if (res.ok) {
-            const result = await res.json();
-            if (result.success && result.rates) {
-              liveData.rates = result.rates;
-              liveData.tanggal_bi = result.tanggal_bi;
-              liveData.timestamp = result.timestamp;
-              
+            const scriptText = await res.text();
+            const updateFn = new Function(scriptText);
+            updateFn();
+
+            liveData = window.LATEST_KURS_DATA || liveData;
+            historyData = window.HISTORY_DATA || historyData;
+            auditLogs = window.AUDIT_LOG_DATA || auditLogs;
+
+            renderCurrencyCards();
+            calculateConversion();
+            renderAuditLogs();
+            renderChart();
+            showToast(`✓ Data dashboard berhasil dimuat ulang (${liveData.tanggal_bi || 'Terkini'})!`);
+            synced = true;
+          }
+        } catch (e) {
+          console.warn("Gagal memuat ulang data online:", e);
+        }
+      } else {
+        // 2. Jika dibuka secara lokal (komputer sendiri), coba hubungi app.py /api/sync
+        const endpoints = ['/api/sync', 'http://localhost:5000/api/sync'];
+        for (const endpoint of endpoints) {
+          try {
+            const res = await fetch(endpoint, { method: 'GET', cache: 'no-store' });
+            if (res.ok) {
+              const result = await res.json();
+              if (result.success && result.rates) {
+                liveData.rates = result.rates;
+                liveData.tanggal_bi = result.tanggal_bi;
+                liveData.timestamp = result.timestamp;
+                
+                renderCurrencyCards();
+                calculateConversion();
+                renderChart();
+                showToast(`✓ Berhasil memperbarui data realtime BI: ${result.tanggal_bi}!`);
+                synced = true;
+                break;
+              }
+            }
+          } catch (e) {}
+        }
+
+        if (!synced) {
+          // Jika app.py lokal belum menyala, muat ulang dari file data.js lokal
+          try {
+            const res = await fetch(`data/data.js?_=${Date.now()}`, { cache: 'no-store' });
+            if (res.ok) {
+              const scriptText = await res.text();
+              const updateFn = new Function(scriptText);
+              updateFn();
+
+              liveData = window.LATEST_KURS_DATA || liveData;
+              historyData = window.HISTORY_DATA || historyData;
+              auditLogs = window.AUDIT_LOG_DATA || auditLogs;
+
               renderCurrencyCards();
               calculateConversion();
               renderChart();
-              showToast(`✓ Berhasil memperbarui data realtime BI: ${result.tanggal_bi}!`);
+              showToast(`✓ Data dashboard berhasil dimuat ulang (${liveData.tanggal_bi || 'Terkini'})!`);
               synced = true;
-              break;
             }
-          }
-        } catch (e) {
-          // Endpoint tidak dapat dihubungi, lanjut ke fallback
+          } catch (e) {}
         }
       }
 
       if (!synced) {
-        // Jika dibuka lewat file:/// dan app.py belum menyala
-        showToast('ℹ️ Server lokal belum aktif. Jalankan run_dashboard.bat jika ingin sinkronisasi manual.');
+        showToast('ℹ️ Gagal memperbarui data. Silakan refresh halaman browser Anda.');
       }
 
       btn.disabled = false;
