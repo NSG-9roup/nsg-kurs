@@ -93,6 +93,15 @@ def format_idr(num):
     decimal_part = parts[1]
     return f"{integer_part},{decimal_part}"
 
+def format_sap(num):
+    """Format angka untuk SAP: tanpa titik ribuan, desimal koma (,), tanpa ,00 jika bilangan bulat."""
+    if num is None:
+        return '-'
+    s = f"{num:.2f}".replace('.', ',')
+    if s.endswith(',00'):
+        return s[:-3]
+    return s
+
 def load_history():
     """Membaca histori kurs sebelumnya yang diurutkan secara kronologis."""
     if os.path.exists(HISTORY_FILE):
@@ -196,10 +205,13 @@ def get_latest_kurs_data():
                     rates[code] = {
                         'jual': round(jual, 2),
                         'jual_str': format_idr(round(jual, 2)),
+                        'jual_sap': format_sap(round(jual, 2)),
                         'beli': round(beli, 2),
                         'beli_str': format_idr(round(beli, 2)),
+                        'beli_sap': format_sap(round(beli, 2)),
                         'tengah': round(tengah, 2),
                         'tengah_str': format_idr(round(tengah, 2)),
+                        'tengah_sap': format_sap(round(tengah, 2)),
                         'delta': round(delta, 2),
                         'delta_pct': round(delta_pct, 2),
                         'trend_icon': trend_icon,
