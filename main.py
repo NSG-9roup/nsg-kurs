@@ -32,20 +32,23 @@ def get_today_id_string():
     now = datetime.now(WIB)
     return f"{now.day} {BULAN_ID[now.month]} {now.year}"
 
-def is_already_sent_today():
-    """Mengecek apakah email untuk tanggal hari ini sudah pernah berhasil dikirim."""
-    today_str = get_today_id_string()
-    now_wib = datetime.now(WIB).strftime("%d/%m/%Y")
+def is_already_sent_recently(hours=1.5):
+    """Mengecek apakah email sukses terkirim dalam X jam terakhir untuk mencegah pengiriman ganda pada jadwal cadangan."""
     if os.path.exists(LOG_FILE):
         try:
             with open(LOG_FILE, 'r', encoding='utf-8') as f:
                 logs = json.load(f)
+            now_dt = datetime.now(WIB)
             for entry in logs:
                 if entry.get("status") == "SUCCESS":
-                    if today_str.lower() in entry.get("tanggal_bi", "").lower():
-                        return True
-                    if entry.get("timestamp", "").startswith(now_wib):
-                        return True
+                    ts_str = entry.get("timestamp", "").replace(" WIB", "")
+                    try:
+                        entry_dt = datetime.strptime(ts_str, "%d/%m/%Y %H:%M:%S").replace(tzinfo=WIB)
+                        diff_hours = (now_dt - entry_dt).total_seconds() / 3600
+                        if diff_hours < hours:
+                            return True
+                    except Exception:
+                        pass
         except Exception:
             pass
     return False
@@ -141,10 +144,10 @@ def run_smart_polling(max_minutes=45, interval_seconds=300):
     """
     today_str = get_today_id_string()
     
-    # Cek apakah hari ini sudah pernah berhasil kirim email (mencegah email ganda pada jadwal cadangan)
-    if is_already_sent_today():
+    # Cek apakah baru saja berhasil kirim email dalam 1.5 jam terakhir (mencegah email ganda pada jadwal cadangan)
+    if is_already_sent_recently(hours=1.5):
         print(f"\n==========================================")
-        print(f"[+] Laporan kurs hari ini ({today_str}) SUDAH BERHASIL dikirim sebelumnya.")
+        print(f"[+] Laporan kurs baru saja berhasil dikirim dalam 1.5 jam terakhir.")
         print(f"[*] Jadwal cadangan otomatis dilewati untuk mencegah pengiriman ganda.")
         print(f"==========================================")
         sync_data()

@@ -2,9 +2,13 @@ name: Laporan Kurs Harian BI
 
 on:
   schedule:
-    # Jadwal Utama: Senin s/d Jumat pukul 01:05 UTC (Pukul 08:05 WIB) - Menghindari jam sibuk :00
+    # Uji Coba Siang Ini: Pukul 04:00 UTC (11:00 WIB)
+    - cron: '0 4 * * *'
+    # Uji Coba Cadangan: Pukul 04:05 UTC (11:05 WIB)
+    - cron: '5 4 * * *'
+    # Jadwal Utama Pagi: Senin s/d Jumat pukul 01:05 UTC (08:05 WIB)
     - cron: '5 1 * * 1-5'
-    # Jadwal Cadangan: Senin s/d Jumat pukul 01:20 UTC (Pukul 08:20 WIB) - Otomatis skip jika jadwal utama sudah sukses
+    # Jadwal Cadangan Pagi: Senin s/d Jumat pukul 01:20 UTC (08:20 WIB)
     - cron: '20 1 * * 1-5'
   workflow_dispatch:
     # Memungkinkan tombol "Run workflow" manual di GitHub Actions kapanpun
