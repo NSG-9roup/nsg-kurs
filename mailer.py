@@ -2,7 +2,7 @@
 mailer.py
 Bertanggung jawab menyusun konten HTML email dengan CID inline attachment
 dan mengirimkannya menggunakan protokol SMTP standar.
-Dioptimasi 100% untuk rendering presisi di Microsoft Outlook Desktop.
+Dioptimasi untuk rendering presisi di Microsoft Outlook Desktop maupun Microsoft Teams.
 Format angka disesuaikan khusus agar kompatibel dengan sistem SAP.
 """
 
@@ -15,12 +15,7 @@ from datetime import datetime
 
 ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'assets')
 LOGO_PATH = os.path.join(ASSETS_DIR, 'logo.png')
-BTN_BI_PATH = os.path.join(ASSETS_DIR, 'btn_bi.png')
-BTN_DASHBOARD_PATH = os.path.join(ASSETS_DIR, 'btn_dashboard.png')
-
 ONLINE_LOGO_URL = 'https://nsg-9roup.github.io/nsg-kurs/assets/logo.png'
-ONLINE_BTN_BI_URL = 'https://nsg-9roup.github.io/nsg-kurs/assets/btn_bi.png'
-ONLINE_BTN_DASHBOARD_URL = 'https://nsg-9roup.github.io/nsg-kurs/assets/btn_dashboard.png'
 
 def format_sap(val):
     """
@@ -50,8 +45,6 @@ def build_html_template(data, use_cid=True):
     dashboard_url = os.environ.get('DASHBOARD_URL', 'https://nsg-9roup.github.io/nsg-kurs/')
 
     logo_src = "cid:nsg_logo" if (use_cid and os.path.exists(LOGO_PATH)) else ONLINE_LOGO_URL
-    btn_bi_src = "cid:btn_bi" if (use_cid and os.path.exists(BTN_BI_PATH)) else ONLINE_BTN_BI_URL
-    btn_dash_src = "cid:btn_dashboard" if (use_cid and os.path.exists(BTN_DASHBOARD_PATH)) else ONLINE_BTN_DASHBOARD_URL
 
     def get_val(cur_code, key):
         val = rates.get(cur_code, {})
@@ -65,21 +58,23 @@ def build_html_template(data, use_cid=True):
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
   <title>[KURS] Laporan Kurs Transaksi Bank Indonesia - {tanggal_bi}</title>
 </head>
-<body style="margin: 0; padding: 24px 0; background-color: #f8fafc; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+<body style="margin: 0; padding: 20px 0; background-color: #f8fafc; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
 
-  <!-- Outer Container Card -->
-  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 630px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif;">
+  <!-- Outer Card Container -->
+  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 630px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; border-collapse: separate;">
     
-    <!-- Top Header Bar -->
+    <!-- Header Section -->
     <tr>
-      <td style="padding: 22px 26px 16px 26px; border-bottom: 2px solid #0056b3;">
-        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+      <td style="padding: 22px 26px 16px 26px; border-bottom: 2px solid #0056b3; border-top: none; border-left: none; border-right: none;">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none !important; border-collapse: collapse;">
           <tr>
-            <td valign="middle" align="left">
+            <td valign="middle" align="left" style="border: none !important;">
               <span style="display: inline-block; background-color: #eff6ff; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid #bfdbfe; letter-spacing: 0.5px; text-transform: uppercase;">
-                &#9679; RESMI BANK INDONESIA &bull; SAP-READY
+                &#9679; RESMI BANK INDONESIA
               </span>
               <h1 style="margin: 6px 0 3px 0; font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">
                 Laporan Kurs Transaksi
@@ -88,8 +83,8 @@ def build_html_template(data, use_cid=True):
                 Tanggal Rilis: <strong style="color: #1e293b;">{tanggal_bi}</strong> &bull; {jam_update}
               </p>
             </td>
-            <td valign="middle" align="right" width="125" style="text-align: right; width: 125px;">
-              <img src="{logo_src}" alt="Nabel Sakha Group" width="112" style="display: block; width: 112px; max-width: 112px; height: auto; border: 0;" />
+            <td valign="middle" align="right" width="130" style="text-align: right; width: 130px; max-width: 130px; border: none !important;">
+              <img src="{logo_src}" alt="Nabel Sakha Group" width="130" height="43" style="display: block; width: 130px; max-width: 130px; height: 43px; border: 0; outline: none; background: transparent !important;" />
             </td>
           </tr>
         </table>
@@ -98,7 +93,7 @@ def build_html_template(data, use_cid=True):
 
     <!-- Main Table Data Area -->
     <tr>
-      <td style="padding: 22px 26px 14px 26px;">
+      <td style="padding: 22px 26px 16px 26px; border: none !important;">
         
         <!-- SAP-Compatible Kurs Table -->
         <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; border: 1px solid #334155; font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; width: 100%;">
@@ -143,55 +138,54 @@ def build_html_template(data, use_cid=True):
           </tbody>
         </table>
 
-        <!-- Graphical Action Buttons Generated by nanobanana -->
-        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-top: 20px;">
-          <tr>
-            <td align="center" style="text-align: center; padding-bottom: 4px;">
-              <table border="0" cellpadding="0" cellspacing="0" align="center">
-                <tr>
-                  <!-- Button 1: Verifikasi Bank Indonesia -->
-                  <td align="center" valign="middle" style="padding: 0 8px;">
-                    <a href="https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx" target="_blank" style="text-decoration: none; display: inline-block;">
-                      <img src="{btn_bi_src}" alt="Verifikasi Bank Indonesia" height="42" style="display: block; height: 42px; width: auto; border: 0; outline: none;" />
-                    </a>
-                  </td>
-                  <!-- Button 2: Dashboard Kurs Online -->
-                  <td align="center" valign="middle" style="padding: 0 8px;">
-                    <a href="{dashboard_url}" target="_blank" style="text-decoration: none; display: inline-block;">
-                      <img src="{btn_dash_src}" alt="Dashboard Kurs Online" height="42" style="display: block; height: 42px; width: auto; border: 0; outline: none;" />
-                    </a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <!-- Fallback Text Links -->
-          <tr>
-            <td align="center" style="font-size: 11.5px; color: #64748b; padding-top: 8px;">
-              Tautan Langsung: 
-              <a href="https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx" target="_blank" style="color: #0284c7; text-decoration: underline; margin-right: 12px; font-weight: 600;">Web Bank Indonesia &nearr;</a>
-              &bull;
-              <a href="{dashboard_url}" target="_blank" style="color: #ea580c; text-decoration: underline; margin-left: 12px; font-weight: 600;">Dashboard Kurs Realtime &nearr;</a>
-            </td>
-          </tr>
-        </table>
+        <!-- Sleek Action Buttons (Optimized for Outlook, Gmail & Microsoft Teams) -->
+        <div style="text-align: center; margin: 22px 0 6px 0; border: none !important;">
+          <table border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto; border: none !important; border-collapse: collapse;">
+            <tr>
+              <!-- Button 1: Verifikasi Bank Indonesia -->
+              <td align="center" valign="middle" style="padding: 4px 8px; border: none !important;">
+                <table border="0" cellpadding="0" cellspacing="0" style="border: none !important; border-collapse: collapse;">
+                  <tr>
+                    <td bgcolor="#0056b3" style="background-color: #0056b3; border-radius: 22px; padding: 11px 20px; text-align: center; border: 1px solid #004b9b;">
+                      <a href="https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx" target="_blank" style="color: #ffffff !important; text-decoration: none; font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: bold; display: inline-block; white-space: nowrap;">
+                        &#128279; Verifikasi Bank Indonesia
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <!-- Button 2: Dashboard Kurs Online -->
+              <td align="center" valign="middle" style="padding: 4px 8px; border: none !important;">
+                <table border="0" cellpadding="0" cellspacing="0" style="border: none !important; border-collapse: collapse;">
+                  <tr>
+                    <td bgcolor="#ea580c" style="background-color: #ea580c; border-radius: 22px; padding: 11px 20px; text-align: center; border: 1px solid #c2410c;">
+                      <a href="{dashboard_url}" target="_blank" style="color: #ffffff !important; text-decoration: none; font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: bold; display: inline-block; white-space: nowrap;">
+                        &#128200; Dashboard Kurs Online
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
 
       </td>
     </tr>
 
     <!-- Footer -->
     <tr>
-      <td style="padding: 16px 26px 20px 26px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11px; color: #64748b; line-height: 1.6;">
-        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+      <td style="padding: 16px 26px 20px 26px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11px; color: #64748b; line-height: 1.6; border-bottom: none; border-left: none; border-right: none;">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none !important; border-collapse: collapse;">
           <tr>
-            <td align="left" valign="top">
+            <td align="left" valign="top" style="border: none !important;">
               &bull; <strong>Kompatibilitas SAP:</strong> Format angka tanpa titik ribuan untuk mempermudah copy-paste ke SAP.<br>
               &bull; <strong>JPY:</strong> Nilai dinormalisasi per 1 Yen (nilai resmi Bank Indonesia per 100 Yen).<br>
               &bull; <strong>Kurs Tengah:</strong> Dihitung otomatis dari <em>(Jual + Beli) &divide; 2</em>.
             </td>
           </tr>
           <tr>
-            <td align="center" style="padding-top: 12px; font-size: 10.5px; color: #94a3b8; border-top: 1px dashed #cbd5e1; margin-top: 8px;">
+            <td align="center" style="padding-top: 12px; font-size: 10.5px; color: #94a3b8; border-top: 1px dashed #cbd5e1; border-bottom: none; border-left: none; border-right: none; margin-top: 8px;">
               Sistem Otomasi Finansial &bull; <strong>Nabel Sakha Group</strong> &bull; <a href="mailto:marketing@nabelsakha.com" style="color: #64748b; text-decoration: none;">marketing@nabelsakha.com</a>
             </td>
           </tr>
@@ -211,7 +205,6 @@ def send_kurs_email(data, recipient_email, smtp_config, subject=None):
         today_str = datetime.now().strftime("%d/%m/%Y")
         subject = f"[KURS] Laporan kurs hari ini {today_str}"
 
-    # Sanitasi daftar penerima
     recipients_list = [r.strip() for r in recipient_email.split(',') if r.strip()]
     if not recipients_list:
         raise ValueError("Target penerima email kosong.")
@@ -254,26 +247,20 @@ Kurs Tengah {get_sap('EUR', 'tengah'):>9}  {get_sap('JPY', 'tengah'):>7}  {get_s
 """
     msg_alt.attach(MIMEText(plain_text, 'plain', 'utf-8'))
 
-    # 2. Rich HTML content dengan CID images
+    # 2. Rich HTML content
     html_content = build_html_template(data, use_cid=True)
     msg_alt.attach(MIMEText(html_content, 'html', 'utf-8'))
 
-    # Lampirkan Logo & Tombol nanobanana sebagai CID Inline
-    attachments = [
-        (LOGO_PATH, '<nsg_logo>', 'logo.png'),
-        (BTN_BI_PATH, '<btn_bi>', 'btn_bi.png'),
-        (BTN_DASHBOARD_PATH, '<btn_dashboard>', 'btn_dashboard.png')
-    ]
-    for path, cid, filename in attachments:
-        if os.path.exists(path):
-            try:
-                with open(path, 'rb') as f:
-                    img = MIMEImage(f.read())
-                    img.add_header('Content-ID', cid)
-                    img.add_header('Content-Disposition', 'inline', filename=filename)
-                    msg.attach(img)
-            except Exception as e:
-                print(f"[Mailer] Gagal melampirkan CID {cid}: {e}")
+    # Lampirkan Logo NSG sebagai CID Inline
+    if os.path.exists(LOGO_PATH):
+        try:
+            with open(LOGO_PATH, 'rb') as f:
+                img = MIMEImage(f.read())
+                img.add_header('Content-ID', '<nsg_logo>')
+                img.add_header('Content-Disposition', 'inline', filename='logo.png')
+                msg.attach(img)
+        except Exception as e:
+            print(f"[Mailer] Gagal melampirkan CID nsg_logo: {e}")
 
     host = smtp_config['host']
     port = int(smtp_config.get('port', 587))
@@ -307,4 +294,4 @@ if __name__ == '__main__':
         f.write(sample_html)
     with open('preview_email.html', 'w', encoding='utf-8') as f:
         f.write(sample_html)
-    print("Berhasil memperbarui kedua file preview dengan tombol nanobanana dan format SAP!")
+    print("Berhasil memperbarui kedua file preview untuk Outlook dan Teams!")
