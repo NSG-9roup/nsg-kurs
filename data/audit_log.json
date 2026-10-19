@@ -1,5 +1,18 @@
 [
   {
+    "id": "LOG-20261019-080028",
+    "tanggal_bi": "19 Oktober 2026",
+    "timestamp": "19/10/2026 08:00:28 WIB",
+    "recipients": [
+      "ferri@nabelsakha.com",
+      "samsul@nabelsakha.com"
+    ],
+    "status": "SUCCESS",
+    "status_code": 200,
+    "message": "Email berhasil dikirim via SMTP dalam 1.30s",
+    "duration_seconds": 1.3
+  },
+  {
     "id": "LOG-20261016-155608",
     "tanggal_bi": "16 Oktober 2026",
     "timestamp": "16/10/2026 15:56:08 WIB",
