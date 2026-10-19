@@ -24,6 +24,21 @@
       "tengah": 13.28,
       "jual": 13.35,
       "beli": 13.21
+    },
+    "AUD": {
+      "tengah": 12510.5,
+      "jual": 12574.8,
+      "beli": 12446.2
+    },
+    "CNY": {
+      "tengah": 2664.8,
+      "jual": 2678.25,
+      "beli": 2651.35
+    },
+    "GBP": {
+      "tengah": 23720.4,
+      "jual": 23841.6,
+      "beli": 23599.2
     }
   },
   "05 Oktober 2026": {
@@ -51,6 +66,21 @@
       "tengah": 13.31,
       "jual": 13.38,
       "beli": 13.24
+    },
+    "AUD": {
+      "tengah": 12518.2,
+      "jual": 12582.55,
+      "beli": 12453.85
+    },
+    "CNY": {
+      "tengah": 2668.5,
+      "jual": 2681.97,
+      "beli": 2655.03
+    },
+    "GBP": {
+      "tengah": 23755.0,
+      "jual": 23876.4,
+      "beli": 23633.6
     }
   },
   "06 Oktober 2026": {
@@ -78,6 +108,21 @@
       "tengah": 13.29,
       "jual": 13.36,
       "beli": 13.22
+    },
+    "AUD": {
+      "tengah": 12522.4,
+      "jual": 12586.75,
+      "beli": 12458.05
+    },
+    "CNY": {
+      "tengah": 2666.2,
+      "jual": 2679.67,
+      "beli": 2652.73
+    },
+    "GBP": {
+      "tengah": 23735.8,
+      "jual": 23857.1,
+      "beli": 23614.5
     }
   },
   "07 Oktober 2026": {
@@ -105,6 +150,21 @@
       "tengah": 13.33,
       "jual": 13.4,
       "beli": 13.26
+    },
+    "AUD": {
+      "tengah": 12562.8,
+      "jual": 12627.45,
+      "beli": 12498.15
+    },
+    "CNY": {
+      "tengah": 2671.5,
+      "jual": 2685.0,
+      "beli": 2658.0
+    },
+    "GBP": {
+      "tengah": 23782.5,
+      "jual": 23904.1,
+      "beli": 23660.9
     }
   },
   "08 Oktober 2026": {
@@ -132,6 +192,21 @@
       "tengah": 13.35,
       "jual": 13.42,
       "beli": 13.28
+    },
+    "AUD": {
+      "tengah": 12520.1,
+      "jual": 12584.45,
+      "beli": 12455.75
+    },
+    "CNY": {
+      "tengah": 2675.3,
+      "jual": 2688.8,
+      "beli": 2661.8
+    },
+    "GBP": {
+      "tengah": 23815.0,
+      "jual": 23936.8,
+      "beli": 23693.2
     }
   },
   "09 Oktober 2026": {
@@ -159,6 +234,21 @@
       "tengah": 13.34,
       "jual": 13.41,
       "beli": 13.27
+    },
+    "AUD": {
+      "tengah": 12492.6,
+      "jual": 12556.8,
+      "beli": 12428.4
+    },
+    "CNY": {
+      "tengah": 2673.0,
+      "jual": 2686.5,
+      "beli": 2659.5
+    },
+    "GBP": {
+      "tengah": 23795.0,
+      "jual": 23916.7,
+      "beli": 23673.3
     }
   },
   "12 Oktober 2026": {
@@ -186,6 +276,21 @@
       "tengah": 13.32,
       "jual": 13.39,
       "beli": 13.25
+    },
+    "AUD": {
+      "tengah": 12548.3,
+      "jual": 12612.8,
+      "beli": 12483.8
+    },
+    "CNY": {
+      "tengah": 2670.1,
+      "jual": 2683.6,
+      "beli": 2656.6
+    },
+    "GBP": {
+      "tengah": 23768.4,
+      "jual": 23890.0,
+      "beli": 23646.8
     }
   },
   "13 Oktober 2026": {
@@ -213,6 +318,21 @@
       "tengah": 13.33,
       "jual": 13.4,
       "beli": 13.26
+    },
+    "AUD": {
+      "tengah": 12553.2,
+      "jual": 12617.75,
+      "beli": 12488.65
+    },
+    "CNY": {
+      "tengah": 2672.4,
+      "jual": 2685.9,
+      "beli": 2658.9
+    },
+    "GBP": {
+      "tengah": 23785.6,
+      "jual": 23907.3,
+      "beli": 23663.9
     }
   },
   "14 Oktober 2026": {
@@ -240,6 +360,21 @@
       "tengah": 17880.0,
       "jual": 17969.4,
       "beli": 17790.6
+    },
+    "AUD": {
+      "tengah": 12551.9,
+      "jual": 12616.45,
+      "beli": 12487.35
+    },
+    "CNY": {
+      "tengah": 2674.2,
+      "jual": 2687.7,
+      "beli": 2660.7
+    },
+    "GBP": {
+      "tengah": 23801.5,
+      "jual": 23923.3,
+      "beli": 23679.7
     }
   },
   "15 Oktober 2026": {
@@ -307,6 +442,21 @@
       "trend_icon": "▲",
       "trend_class": "up",
       "trend_text": "+18,00 (+0.10%)"
+    },
+    "AUD": {
+      "tengah": 12608.5,
+      "jual": 12673.3,
+      "beli": 12543.7
+    },
+    "CNY": {
+      "tengah": 2676.8,
+      "jual": 2690.3,
+      "beli": 2663.3
+    },
+    "GBP": {
+      "tengah": 23825.2,
+      "jual": 23947.1,
+      "beli": 23703.3
     }
   },
   "16 Oktober 2026": {
@@ -389,6 +539,21 @@
       "trend_icon": "▲",
       "trend_class": "up",
       "trend_text": "+50,00 (+0.28%)"
+    },
+    "AUD": {
+      "tengah": 12512.4,
+      "jual": 12576.7,
+      "beli": 12448.1
+    },
+    "CNY": {
+      "tengah": 2684.2,
+      "jual": 2697.75,
+      "beli": 2670.65
+    },
+    "GBP": {
+      "tengah": 23892.0,
+      "jual": 24014.25,
+      "beli": 23769.75
     }
   },
   "19 Oktober 2026": {
@@ -402,11 +567,11 @@
       "tengah": 12564.2,
       "tengah_str": "12.564,20",
       "tengah_sap": "12564,20",
-      "delta": 0.0,
-      "delta_pct": 0.0,
-      "trend_icon": "-",
-      "trend_class": "neutral",
-      "trend_text": "Tetap"
+      "delta": 51.8,
+      "delta_pct": 0.41,
+      "trend_icon": "▲",
+      "trend_class": "up",
+      "trend_text": "+51,80 (+0.41%)"
     },
     "CNY": {
       "jual": 2713.27,
@@ -418,11 +583,11 @@
       "tengah": 2699.61,
       "tengah_str": "2.699,61",
       "tengah_sap": "2699,61",
-      "delta": 0.0,
-      "delta_pct": 0.0,
-      "trend_icon": "-",
-      "trend_class": "neutral",
-      "trend_text": "Tetap"
+      "delta": 15.41,
+      "delta_pct": 0.57,
+      "trend_icon": "▲",
+      "trend_class": "up",
+      "trend_text": "+15,41 (+0.57%)"
     },
     "EUR": {
       "jual": 20391.9,
@@ -450,11 +615,11 @@
       "tengah": 24029.94,
       "tengah_str": "24.029,94",
       "tengah_sap": "24029,94",
-      "delta": 0.0,
-      "delta_pct": 0.0,
-      "trend_icon": "-",
-      "trend_class": "neutral",
-      "trend_text": "Tetap"
+      "delta": 137.94,
+      "delta_pct": 0.58,
+      "trend_icon": "▲",
+      "trend_class": "up",
+      "trend_text": "+137,94 (+0.58%)"
     },
     "JPY": {
       "jual": 114.82,
