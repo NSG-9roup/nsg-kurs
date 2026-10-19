@@ -392,6 +392,38 @@
     }
   },
   "19 Oktober 2026": {
+    "AUD": {
+      "jual": 12628.83,
+      "jual_str": "12.628,83",
+      "jual_sap": "12628,83",
+      "beli": 12499.57,
+      "beli_str": "12.499,57",
+      "beli_sap": "12499,57",
+      "tengah": 12564.2,
+      "tengah_str": "12.564,20",
+      "tengah_sap": "12564,20",
+      "delta": 0.0,
+      "delta_pct": 0.0,
+      "trend_icon": "-",
+      "trend_class": "neutral",
+      "trend_text": "Tetap"
+    },
+    "CNY": {
+      "jual": 2713.27,
+      "jual_str": "2.713,27",
+      "jual_sap": "2713,27",
+      "beli": 2685.95,
+      "beli_str": "2.685,95",
+      "beli_sap": "2685,95",
+      "tengah": 2699.61,
+      "tengah_str": "2.699,61",
+      "tengah_sap": "2699,61",
+      "delta": 0.0,
+      "delta_pct": 0.0,
+      "trend_icon": "-",
+      "trend_class": "neutral",
+      "trend_text": "Tetap"
+    },
     "EUR": {
       "jual": 20391.9,
       "jual_str": "20.391,90",
@@ -407,6 +439,22 @@
       "trend_icon": "▲",
       "trend_class": "up",
       "trend_text": "+168,04 (+0.84%)"
+    },
+    "GBP": {
+      "jual": 24152.79,
+      "jual_str": "24.152,79",
+      "jual_sap": "24152,79",
+      "beli": 23907.08,
+      "beli_str": "23.907,08",
+      "beli_sap": "23907,08",
+      "tengah": 24029.94,
+      "tengah_str": "24.029,94",
+      "tengah_sap": "24029,94",
+      "delta": 0.0,
+      "delta_pct": 0.0,
+      "trend_icon": "-",
+      "trend_class": "neutral",
+      "trend_text": "Tetap"
     },
     "JPY": {
       "jual": 114.82,

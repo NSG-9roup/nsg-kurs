@@ -6,6 +6,7 @@ from mailer import build_html_template
 DATA_JS_PATH = os.path.join(os.path.dirname(__file__), 'data', 'data.js')
 LOG_FILE = os.path.join(os.path.dirname(__file__), 'data', 'audit_log.json')
 PREVIEW_EMAIL_PATH = os.path.join(os.path.dirname(__file__), 'preview_email.html')
+PREVIEW_EMAIL_DQW_PATH = os.path.join(os.path.dirname(__file__), 'preview_email_dqw.html')
 PREVIEW_TREND_PATH = os.path.join(os.path.dirname(__file__), 'preview_with_trend.html')
 
 def sync_data(latest_data=None):
@@ -33,15 +34,18 @@ def sync_data(latest_data=None):
         except Exception:
             logs = []
 
-    # Generate Online Logo HTML Template for Clipboard & Preview
-    email_html = build_html_template(latest_data, use_cid=False)
+    # Generate Online HTML Templates for Clipboard & Preview
+    email_html_nsg = build_html_template(latest_data, report_type='NSG', use_cid=False)
+    email_html_dqw = build_html_template(latest_data, report_type='DQW', use_cid=False)
 
     # Save preview files
     try:
         with open(PREVIEW_EMAIL_PATH, 'w', encoding='utf-8') as f:
-            f.write(email_html)
+            f.write(email_html_nsg)
         with open(PREVIEW_TREND_PATH, 'w', encoding='utf-8') as f:
-            f.write(email_html)
+            f.write(email_html_nsg)
+        with open(PREVIEW_EMAIL_DQW_PATH, 'w', encoding='utf-8') as f:
+            f.write(email_html_dqw)
     except Exception as e:
         print(f"[Sync] Warning: Gagal menulis file preview: {e}")
 
@@ -50,7 +54,9 @@ def sync_data(latest_data=None):
 window.LATEST_KURS_DATA = {json.dumps(latest_data, indent=2, ensure_ascii=False)};
 window.HISTORY_DATA = {json.dumps(history, indent=2, ensure_ascii=False)};
 window.AUDIT_LOG_DATA = {json.dumps(logs, indent=2, ensure_ascii=False)};
-window.EMAIL_HTML = {json.dumps(email_html, ensure_ascii=False)};
+window.EMAIL_HTML = {json.dumps(email_html_nsg, ensure_ascii=False)};
+window.EMAIL_HTML_NSG = {json.dumps(email_html_nsg, ensure_ascii=False)};
+window.EMAIL_HTML_DQW = {json.dumps(email_html_dqw, ensure_ascii=False)};
 """
     with open(DATA_JS_PATH, 'w', encoding='utf-8') as f:
         f.write(js_content)

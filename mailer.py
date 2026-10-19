@@ -12,6 +12,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime
 
+CURRENCIES_NSG = ['EUR', 'JPY', 'KRW', 'SGD', 'USD']
+CURRENCIES_DQW = ['AUD', 'EUR', 'GBP', 'KRW', 'CNY', 'SGD', 'USD']
+
 def format_sap(val):
     """
     Format angka bersih:
@@ -33,11 +36,18 @@ def format_sap(val):
         return val_str[:-3]
     return val_str
 
-def build_html_template(data, use_cid=False):
+def build_html_template(data, report_type='NSG', use_cid=False):
     rates = data.get('rates', {})
     tanggal_bi = data.get('tanggal_bi', datetime.now().strftime("%d %B %Y"))
     jam_update = data.get('timestamp', '08:00 WIB')
     dashboard_url = os.environ.get('DASHBOARD_URL', 'https://nsg-9roup.github.io/nsg-kurs/')
+
+    is_dqw = (str(report_type).upper() == 'DQW')
+    currencies = CURRENCIES_DQW if is_dqw else CURRENCIES_NSG
+    
+    brand_title = "DQW DIVISION" if is_dqw else "NABEL SAKHA GROUP"
+    report_title = "Laporan Kurs Transaksi (DQW)" if is_dqw else "Laporan Kurs Transaksi"
+    email_title_tag = f"[KURS DQW] Laporan Kurs Transaksi Bank Indonesia - {tanggal_bi}" if is_dqw else f"[KURS] Laporan Kurs Transaksi Bank Indonesia - {tanggal_bi}"
 
     def get_val(cur_code, key):
         val = rates.get(cur_code, {})
@@ -47,18 +57,51 @@ def build_html_template(data, use_cid=False):
             return format_sap(val[key])
         return format_sap(val.get(f"{key}_str", '-'))
 
+    # Dynamic Column Calculations
+    label_width = "18%" if is_dqw else "22%"
+    col_width = f"{int(82 / len(currencies))}%" if is_dqw else f"{int(78 / len(currencies))}%"
+
+    th_cells = "".join([
+        f'<th style="border: 1px solid #334155; padding: 8px 6px; color: #0284c7; font-weight: 800; text-align: center; width: {col_width}; background-color: #f1f5f9; font-size: 13.5px; font-family: \'Segoe UI\', Arial, sans-serif;">{c}</th>'
+        for c in currencies
+    ])
+
+    jual_cells = "".join([
+        f'<td style="border: 1px solid #334155; padding: 8px 6px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: {700 if c == "USD" else 500}; font-size: 12.5px;">{get_val(c, "jual")}</td>'
+        for c in currencies
+    ])
+
+    beli_cells = "".join([
+        f'<td style="border: 1px solid #334155; padding: 8px 6px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: {700 if c == "USD" else 500}; font-size: 12.5px;">{get_val(c, "beli")}</td>'
+        for c in currencies
+    ])
+
+    tengah_cells = "".join([
+        f'<td style="border: 1px solid #334155; padding: 8px 6px; text-align: right; color: #0284c7; white-space: nowrap; font-weight: {800 if c == "USD" else 700}; background-color: #f8fafc; font-size: 12.5px;">{get_val(c, "tengah")}</td>'
+        for c in currencies
+    ])
+
+    # Footnote logic
+    footnote_items = []
+    if 'JPY' in currencies:
+        footnote_items.append('&bull; <strong>JPY:</strong> Nilai dinormalisasi per 1 Yen (nilai resmi Bank Indonesia per 100 Yen).')
+    footnote_items.append('&bull; <strong>Kurs Tengah:</strong> Dihitung otomatis dari <em>(Jual + Beli) &divide; 2</em>.')
+    footnote_html = "<br>".join(footnote_items)
+
+    footer_entity = "Nabel Sakha Group (DQW)" if is_dqw else "Nabel Sakha Group"
+
     html = f"""<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
-  <title>[KURS] Laporan Kurs Transaksi Bank Indonesia - {tanggal_bi}</title>
+  <title>{email_title_tag}</title>
 </head>
 <body style="margin: 0; padding: 20px 0; background-color: #f8fafc; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
 
   <!-- Outer Card Container -->
-  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 630px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; border-collapse: separate;">
+  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 650px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; border-collapse: separate;">
     
     <!-- Header Section (Murni Teks Tanpa Gambar) -->
     <tr>
@@ -70,7 +113,7 @@ def build_html_template(data, use_cid=False):
                 &#9679; RESMI BANK INDONESIA
               </span>
               <h1 style="margin: 6px 0 3px 0; font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">
-                Laporan Kurs Transaksi
+                {report_title}
               </h1>
               <p style="margin: 0; font-size: 13px; color: #64748b;">
                 Tanggal Rilis: <strong style="color: #1e293b;">{tanggal_bi}</strong> &bull; {jam_update}
@@ -78,7 +121,7 @@ def build_html_template(data, use_cid=False):
             </td>
             <td valign="middle" align="right" style="text-align: right; border: none !important; white-space: nowrap;">
               <div style="font-size: 14px; font-weight: 800; color: #0f172a; letter-spacing: -0.2px;">
-                NABEL SAKHA GROUP
+                {brand_title}
               </div>
               <div style="font-size: 11px; color: #64748b; font-weight: 600; margin-top: 2px;">
                 Financial Operations
@@ -97,41 +140,25 @@ def build_html_template(data, use_cid=False):
         <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; border: 1px solid #334155; font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; width: 100%;">
           <thead>
             <tr bgcolor="#f1f5f9" style="background-color: #f1f5f9;">
-              <th style="border: 1px solid #334155; padding: 8px 12px; width: 22%; background-color: #f1f5f9;"></th>
-              <th style="border: 1px solid #334155; padding: 8px 10px; color: #0284c7; font-weight: 800; text-align: center; width: 15%; background-color: #f1f5f9; font-size: 14px; font-family: 'Segoe UI', Arial, sans-serif;">EUR</th>
-              <th style="border: 1px solid #334155; padding: 8px 10px; color: #0284c7; font-weight: 800; text-align: center; width: 15%; background-color: #f1f5f9; font-size: 14px; font-family: 'Segoe UI', Arial, sans-serif;">JPY</th>
-              <th style="border: 1px solid #334155; padding: 8px 10px; color: #0284c7; font-weight: 800; text-align: center; width: 15%; background-color: #f1f5f9; font-size: 14px; font-family: 'Segoe UI', Arial, sans-serif;">KRW</th>
-              <th style="border: 1px solid #334155; padding: 8px 10px; color: #0284c7; font-weight: 800; text-align: center; width: 16%; background-color: #f1f5f9; font-size: 14px; font-family: 'Segoe UI', Arial, sans-serif;">SGD</th>
-              <th style="border: 1px solid #334155; padding: 8px 10px; color: #0284c7; font-weight: 800; text-align: center; width: 17%; background-color: #f1f5f9; font-size: 14px; font-family: 'Segoe UI', Arial, sans-serif;">USD</th>
+              <th style="border: 1px solid #334155; padding: 8px 10px; width: {label_width}; background-color: #f1f5f9;"></th>
+              {th_cells}
             </tr>
           </thead>
           <tbody>
             <!-- Row 1: Kurs Jual -->
             <tr>
-              <td style="border: 1px solid #334155; padding: 8px 12px; font-weight: 700; text-align: left; color: #0f172a; white-space: nowrap; font-family: 'Segoe UI', Arial, sans-serif;">Kurs Jual</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: 500;">{get_val('EUR', 'jual')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: 500;">{get_val('JPY', 'jual')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: 500;">{get_val('KRW', 'jual')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: 500;">{get_val('SGD', 'jual')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: 700;">{get_val('USD', 'jual')}</td>
+              <td style="border: 1px solid #334155; padding: 8px 10px; font-weight: 700; text-align: left; color: #0f172a; white-space: nowrap; font-family: 'Segoe UI', Arial, sans-serif;">Kurs Jual</td>
+              {jual_cells}
             </tr>
             <!-- Row 2: Kurs Beli -->
             <tr>
-              <td style="border: 1px solid #334155; padding: 8px 12px; font-weight: 700; text-align: left; color: #0f172a; white-space: nowrap; font-family: 'Segoe UI', Arial, sans-serif;">Kurs Beli</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: 500;">{get_val('EUR', 'beli')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: 500;">{get_val('JPY', 'beli')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: 500;">{get_val('KRW', 'beli')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: 500;">{get_val('SGD', 'beli')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0f172a; white-space: nowrap; font-weight: 700;">{get_val('USD', 'beli')}</td>
+              <td style="border: 1px solid #334155; padding: 8px 10px; font-weight: 700; text-align: left; color: #0f172a; white-space: nowrap; font-family: 'Segoe UI', Arial, sans-serif;">Kurs Beli</td>
+              {beli_cells}
             </tr>
             <!-- Row 3: Kurs Tengah (Highlighted Clean Row) -->
             <tr bgcolor="#f8fafc" style="background-color: #f8fafc;">
-              <td style="border: 1px solid #334155; padding: 8px 12px; font-weight: 800; text-align: left; color: #0284c7; white-space: nowrap; background-color: #f8fafc; font-family: 'Segoe UI', Arial, sans-serif;">Kurs Tengah</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0284c7; white-space: nowrap; font-weight: 700; background-color: #f8fafc;">{get_val('EUR', 'tengah')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0284c7; white-space: nowrap; font-weight: 700; background-color: #f8fafc;">{get_val('JPY', 'tengah')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0284c7; white-space: nowrap; font-weight: 700; background-color: #f8fafc;">{get_val('KRW', 'tengah')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0284c7; white-space: nowrap; font-weight: 700; background-color: #f8fafc;">{get_val('SGD', 'tengah')}</td>
-              <td style="border: 1px solid #334155; padding: 8px 10px; text-align: right; color: #0284c7; white-space: nowrap; font-weight: 800; background-color: #f8fafc;">{get_val('USD', 'tengah')}</td>
+              <td style="border: 1px solid #334155; padding: 8px 10px; font-weight: 800; text-align: left; color: #0284c7; white-space: nowrap; background-color: #f8fafc; font-family: 'Segoe UI', Arial, sans-serif;">Kurs Tengah</td>
+              {tengah_cells}
             </tr>
           </tbody>
         </table>
@@ -158,19 +185,18 @@ def build_html_template(data, use_cid=False):
       </td>
     </tr>
 
-    <!-- Footer (Bersih Tanpa Kalimat SAP) -->
+    <!-- Footer -->
     <tr>
       <td style="padding: 16px 26px 20px 26px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11px; color: #64748b; line-height: 1.6;">
         <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none !important; border-collapse: collapse;">
           <tr>
             <td align="left" valign="top" style="border: none !important;">
-              &bull; <strong>JPY:</strong> Nilai dinormalisasi per 1 Yen (nilai resmi Bank Indonesia per 100 Yen).<br>
-              &bull; <strong>Kurs Tengah:</strong> Dihitung otomatis dari <em>(Jual + Beli) &divide; 2</em>.
+              {footnote_html}
             </td>
           </tr>
           <tr>
             <td align="center" style="padding-top: 12px; font-size: 10.5px; color: #94a3b8; border-top: 1px dashed #cbd5e1; margin-top: 8px; border-left: none; border-right: none; border-bottom: none;">
-              Sistem Otomasi Finansial &bull; <strong>Nabel Sakha Group</strong> &bull; <a href="mailto:marketing@nabelsakha.com" style="color: #64748b; text-decoration: none;">marketing@nabelsakha.com</a>
+              Sistem Otomasi Finansial &bull; <strong>{footer_entity}</strong> &bull; <a href="mailto:marketing@nabelsakha.com" style="color: #64748b; text-decoration: none;">marketing@nabelsakha.com</a>
             </td>
           </tr>
         </table>
@@ -184,10 +210,15 @@ def build_html_template(data, use_cid=False):
 """
     return html
 
-def send_kurs_email(data, recipient_email, smtp_config, subject=None):
+def send_kurs_email(data, recipient_email, smtp_config, subject=None, report_type='NSG'):
+    is_dqw = (str(report_type).upper() == 'DQW')
+    today_str = datetime.now().strftime("%d/%m/%Y")
+    
     if not subject:
-        today_str = datetime.now().strftime("%d/%m/%Y")
-        subject = f"[KURS] Laporan kurs hari ini {today_str}"
+        if is_dqw:
+            subject = f"[KURS DQW] Laporan kurs hari ini {today_str}"
+        else:
+            subject = f"[KURS] Laporan kurs hari ini {today_str}"
 
     recipients_list = [r.strip() for r in recipient_email.split(',') if r.strip()]
     if not recipients_list:
@@ -203,6 +234,7 @@ def send_kurs_email(data, recipient_email, smtp_config, subject=None):
     tanggal_bi = data.get('tanggal_bi', '')
     today_formatted = datetime.now().strftime("%d/%m/%Y")
     dashboard_url = os.environ.get('DASHBOARD_URL', 'https://nsg-9roup.github.io/nsg-kurs/')
+    currencies = CURRENCIES_DQW if is_dqw else CURRENCIES_NSG
 
     def get_sap(cur_code, key):
         val = rates.get(cur_code, {})
@@ -213,22 +245,28 @@ def send_kurs_email(data, recipient_email, smtp_config, subject=None):
         return format_sap(val.get(f"{key}_str", '-'))
 
     # 1. Plain text fallback
-    plain_text = f"""[KURS] Laporan kurs hari ini {today_formatted}
+    header_line = f"{'':12}" + "".join([f"{c:>11}" for c in currencies])
+    jual_line   = f"{'Kurs Jual':12}" + "".join([f"{get_sap(c, 'jual'):>11}" for c in currencies])
+    beli_line   = f"{'Kurs Beli':12}" + "".join([f"{get_sap(c, 'beli'):>11}" for c in currencies])
+    tengah_line = f"{'Kurs Tengah':12}" + "".join([f"{get_sap(c, 'tengah'):>11}" for c in currencies])
+
+    jpy_plain_note = "* JPY dinormalisasi per 1 Yen (nilai resmi BI per 100 Yen).\n" if 'JPY' in currencies else ""
+
+    plain_text = f"""{subject}
 Tanggal Rilis BI: {tanggal_bi}
 
-            EUR        JPY       KRW        SGD        USD
-Kurs Jual   {get_sap('EUR', 'jual'):>9}  {get_sap('JPY', 'jual'):>7}  {get_sap('KRW', 'jual'):>6}  {get_sap('SGD', 'jual'):>9}  {get_sap('USD', 'jual'):>9}
-Kurs Beli   {get_sap('EUR', 'beli'):>9}  {get_sap('JPY', 'beli'):>7}  {get_sap('KRW', 'beli'):>6}  {get_sap('SGD', 'beli'):>9}  {get_sap('USD', 'beli'):>9}
-Kurs Tengah {get_sap('EUR', 'tengah'):>9}  {get_sap('JPY', 'tengah'):>7}  {get_sap('KRW', 'tengah'):>6}  {get_sap('SGD', 'tengah'):>9}  {get_sap('USD', 'tengah'):>9}
+{header_line}
+{jual_line}
+{beli_line}
+{tengah_line}
 
-* JPY dinormalisasi per 1 Yen (nilai resmi BI per 100 Yen).
-* Verifikasi Resmi Bank Indonesia: https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx
+{jpy_plain_note}* Verifikasi Resmi Bank Indonesia: https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx
 * Dashboard Kurs Realtime: {dashboard_url}
 """
     msg.attach(MIMEText(plain_text, 'plain', 'utf-8'))
 
     # 2. Rich HTML content murni tanpa gambar
-    html_content = build_html_template(data, use_cid=False)
+    html_content = build_html_template(data, report_type=report_type, use_cid=False)
     msg.attach(MIMEText(html_content, 'html', 'utf-8'))
 
     host = smtp_config['host']
@@ -237,7 +275,7 @@ Kurs Tengah {get_sap('EUR', 'tengah'):>9}  {get_sap('JPY', 'tengah'):>7}  {get_s
     password = smtp_config['pass']
     use_tls = smtp_config.get('use_tls', True)
 
-    print(f"[Mailer] Menghubungkan ke {host}:{port} (Penerima: {', '.join(recipients_list)})...")
+    print(f"[Mailer - {report_type}] Menghubungkan ke {host}:{port} (Penerima: {', '.join(recipients_list)})...")
     
     if port == 465:
         server = smtplib.SMTP_SSL(host, port, timeout=30)
@@ -252,15 +290,21 @@ Kurs Tengah {get_sap('EUR', 'tengah'):>9}  {get_sap('JPY', 'tengah'):>7}  {get_s
     server.login(user, password)
     server.sendmail(user, recipients_list, msg.as_string())
     server.quit()
-    print(f"[Mailer] Sukses terkirim ke {', '.join(recipients_list)}!")
+    print(f"[Mailer - {report_type}] Sukses terkirim ke {', '.join(recipients_list)}!")
     return True
 
 if __name__ == '__main__':
     from scraper import get_latest_kurs_data
     data = get_latest_kurs_data()
-    sample_html = build_html_template(data, use_cid=False)
-    with open('preview_with_trend.html', 'w', encoding='utf-8') as f:
-        f.write(sample_html)
+    
+    html_nsg = build_html_template(data, report_type='NSG', use_cid=False)
+    html_dqw = build_html_template(data, report_type='DQW', use_cid=False)
+    
     with open('preview_email.html', 'w', encoding='utf-8') as f:
-        f.write(sample_html)
-    print("Berhasil memperbarui kedua file preview dengan tombol tabel murni!")
+        f.write(html_nsg)
+    with open('preview_with_trend.html', 'w', encoding='utf-8') as f:
+        f.write(html_nsg)
+    with open('preview_email_dqw.html', 'w', encoding='utf-8') as f:
+        f.write(html_dqw)
+        
+    print("Berhasil memperbarui preview email NSG (preview_email.html) & DQW (preview_email_dqw.html)!")

@@ -13,7 +13,7 @@ import os
 import time
 from datetime import datetime, timezone, timedelta
 
-TARGET_CURRENCIES = ['EUR', 'JPY', 'KRW', 'SGD', 'USD']
+TARGET_CURRENCIES = ['AUD', 'CNY', 'EUR', 'GBP', 'JPY', 'KRW', 'SGD', 'USD']
 BI_URL = 'https://www.bi.go.id/id/statistik/informasi-kurs/transaksi-bi/default.aspx'
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), 'data', 'history.json')
 WIB = timezone(timedelta(hours=7))
