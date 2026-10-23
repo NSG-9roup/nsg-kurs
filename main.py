@@ -144,7 +144,7 @@ def run_immediate_send(data=None, recipient=None, report_types=None, force=False
             print(f"    Pengiriman [{rtype_upper}] dilewati untuk mencegah email ganda.")
             continue
 
-        subj = f"[KURS DQW] Laporan kurs hari ini {today_formatted}" if rtype_upper == 'DQW' else f"[KURS] Laporan kurs hari ini {today_formatted}"
+        subj = f"[KURS] {rtype_upper} - Laporan kurs hari ini {today_formatted}"
         
         send_start = time.time()
         try:

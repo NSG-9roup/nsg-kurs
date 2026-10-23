@@ -47,7 +47,8 @@ def build_html_template(data, report_type='NSG', use_cid=False):
     
     brand_title = "DQW DIVISION" if is_dqw else "NABEL SAKHA GROUP"
     report_title = "Laporan Kurs Transaksi (DQW)" if is_dqw else "Laporan Kurs Transaksi"
-    email_title_tag = f"[KURS DQW] Laporan Kurs Transaksi Bank Indonesia - {tanggal_bi}" if is_dqw else f"[KURS] Laporan Kurs Transaksi Bank Indonesia - {tanggal_bi}"
+    rpt_prefix = "DQW" if is_dqw else "NSG"
+    email_title_tag = f"[KURS] {rpt_prefix} - Laporan Kurs Transaksi Bank Indonesia - {tanggal_bi}"
 
     def get_val(cur_code, key):
         val = rates.get(cur_code, {})
@@ -215,10 +216,8 @@ def send_kurs_email(data, recipient_email, smtp_config, subject=None, report_typ
     today_str = datetime.now().strftime("%d/%m/%Y")
     
     if not subject:
-        if is_dqw:
-            subject = f"[KURS DQW] Laporan kurs hari ini {today_str}"
-        else:
-            subject = f"[KURS] Laporan kurs hari ini {today_str}"
+        rpt_prefix = "DQW" if is_dqw else "NSG"
+        subject = f"[KURS] {rpt_prefix} - Laporan kurs hari ini {today_str}"
 
     recipients_list = [r.strip() for r in recipient_email.split(',') if r.strip()]
     if not recipients_list:
