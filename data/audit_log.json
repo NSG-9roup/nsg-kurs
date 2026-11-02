@@ -1,5 +1,33 @@
 [
   {
+    "id": "LOG-20261102-080028-DQW",
+    "report_type": "DQW",
+    "tanggal_bi": "2 November 2026",
+    "timestamp": "02/11/2026 08:00:28 WIB",
+    "recipients": [
+      "ferri@nabelsakha.com",
+      "samsul@nabelsakha.com"
+    ],
+    "status": "SUCCESS",
+    "status_code": 200,
+    "message": "Email [DQW] berhasil dikirim via SMTP dalam 0.94s",
+    "duration_seconds": 0.94
+  },
+  {
+    "id": "LOG-20261102-080027-NSG",
+    "report_type": "NSG",
+    "tanggal_bi": "2 November 2026",
+    "timestamp": "02/11/2026 08:00:27 WIB",
+    "recipients": [
+      "ferri@nabelsakha.com",
+      "samsul@nabelsakha.com"
+    ],
+    "status": "SUCCESS",
+    "status_code": 200,
+    "message": "Email [NSG] berhasil dikirim via SMTP dalam 1.42s",
+    "duration_seconds": 1.42
+  },
+  {
     "id": "LOG-20261030-080035-DQW",
     "report_type": "DQW",
     "tanggal_bi": "30 Oktober 2026",
