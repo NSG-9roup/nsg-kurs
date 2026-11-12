@@ -52,7 +52,7 @@ def is_already_sent_today(report_type, tanggal_bi=None):
                 entry_date = entry.get("tanggal_bi", "").lower().strip()
                 # Jika log lama belum ada field report_type, anggap sebagai NSG
                 entry_type = entry.get("report_type", "NSG").upper()
-                if entry_type == target_type and (target_date in entry_date or entry_date in target_date):
+                if entry_type == target_type and target_date == entry_date:
                     return True
     except Exception:
         pass
@@ -69,7 +69,13 @@ def record_audit_log(tanggal_bi, recipients, status, message, duration, report_t
             logs = []
 
     now_wib = datetime.now(WIB)
-    rec_list = [r.strip() for r in recipients.split(',') if r.strip()]
+    if isinstance(recipients, list):
+        rec_list = [str(r).strip() for r in recipients if str(r).strip()]
+    elif isinstance(recipients, str):
+        rec_list = [r.strip() for r in recipients.split(',') if r.strip()]
+    else:
+        rec_list = []
+
     new_entry = {
         "id": f"LOG-{now_wib.strftime('%Y%m%d-%H%M%S')}-{report_type.upper()}",
         "report_type": report_type.upper(),
@@ -136,13 +142,17 @@ def run_immediate_send(data=None, recipient=None, report_types=None, force=False
     today_formatted = datetime.now(WIB).strftime("%d/%m/%Y")
     overall_success = True
 
-    for rtype in report_types:
+    for idx, rtype in enumerate(report_types):
         rtype_upper = rtype.upper()
         # Cek pengaman tanggal: apakah sudah terkirim hari ini?
         if not force and is_already_sent_today(rtype_upper, data['tanggal_bi']):
             print(f"\n[+] Laporan [{rtype_upper}] untuk tanggal {data['tanggal_bi']} SUDAH TERKIRIM HARI INI.")
             print(f"    Pengiriman [{rtype_upper}] dilewati untuk mencegah email ganda.")
             continue
+
+        if idx > 0:
+            print("[*] Memberikan jeda 3 detik sebelum mengirim laporan berikutnya...")
+            time.sleep(3)
 
         subj = f"[KURS] {rtype_upper} - Laporan kurs hari ini {today_formatted}"
         
