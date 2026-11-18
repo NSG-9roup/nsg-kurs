@@ -1,5 +1,33 @@
 [
   {
+    "id": "LOG-20261118-080046-DQW",
+    "report_type": "DQW",
+    "tanggal_bi": "18 November 2026",
+    "timestamp": "18/11/2026 08:00:46 WIB",
+    "recipients": [
+      "ferri@nabelsakha.com",
+      "samsul@nabelsakha.com"
+    ],
+    "status": "SUCCESS",
+    "status_code": 200,
+    "message": "Email [DQW] berhasil dikirim via SMTP dalam 0.69s",
+    "duration_seconds": 0.69
+  },
+  {
+    "id": "LOG-20261118-080042-NSG",
+    "report_type": "NSG",
+    "tanggal_bi": "18 November 2026",
+    "timestamp": "18/11/2026 08:00:42 WIB",
+    "recipients": [
+      "ferri@nabelsakha.com",
+      "samsul@nabelsakha.com"
+    ],
+    "status": "SUCCESS",
+    "status_code": 200,
+    "message": "Email [NSG] berhasil dikirim via SMTP dalam 0.87s",
+    "duration_seconds": 0.87
+  },
+  {
     "id": "LOG-20261117-080036-DQW",
     "report_type": "DQW",
     "tanggal_bi": "17 November 2026",
@@ -665,17 +693,5 @@
     "status_code": 200,
     "message": "Email berhasil dikirim via SMTP dalam 0.73s",
     "duration_seconds": 0.73
-  },
-  {
-    "id": "LOG-20261015-135848",
-    "tanggal_bi": "15 Oktober 2026",
-    "timestamp": "15/10/2026 13:58:48 WIB",
-    "recipients": [
-      "samsul@nabelsakha.com"
-    ],
-    "status": "FAILED",
-    "status_code": 500,
-    "message": "Gagal mengirim: (535, b'5.7.139 Authentication unsuccessful, SmtpClientAuthentication is disabled for the Tenant. Visit https://aka.ms/smtp_auth_disabled for more information. [DS7PR06CA0037.namprd06.prod.outlook.com 2026-10-15T06:58:48.109Z 08DF28F9555E0A4F]')",
-    "duration_seconds": 6.54
   }
 ]
