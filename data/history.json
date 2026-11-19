@@ -1,46 +1,4 @@
 {
-  "08 Oktober 2026": {
-    "USD": {
-      "tengah": 17890.0,
-      "jual": 17979.45,
-      "beli": 17800.55
-    },
-    "EUR": {
-      "tengah": 20015.4,
-      "jual": 20115.48,
-      "beli": 19915.32
-    },
-    "SGD": {
-      "tengah": 13960.5,
-      "jual": 14030.3,
-      "beli": 13890.7
-    },
-    "JPY": {
-      "tengah": 113.1,
-      "jual": 113.67,
-      "beli": 112.53
-    },
-    "KRW": {
-      "tengah": 13.35,
-      "jual": 13.42,
-      "beli": 13.28
-    },
-    "AUD": {
-      "tengah": 12520.1,
-      "jual": 12584.45,
-      "beli": 12455.75
-    },
-    "CNY": {
-      "tengah": 2675.3,
-      "jual": 2688.8,
-      "beli": 2661.8
-    },
-    "GBP": {
-      "tengah": 23815.0,
-      "jual": 23936.8,
-      "beli": 23693.2
-    }
-  },
   "09 Oktober 2026": {
     "USD": {
       "tengah": 17875.0,
@@ -3376,6 +3334,136 @@
       "trend_icon": "▲",
       "trend_class": "up",
       "trend_text": "+14,00 (+0.08%)"
+    }
+  },
+  "19 November 2026": {
+    "AUD": {
+      "jual": 12332.17,
+      "jual_str": "12.332,17",
+      "jual_sap": "12332,17",
+      "beli": 12207.65,
+      "beli_str": "12.207,65",
+      "beli_sap": "12207,65",
+      "tengah": 12269.91,
+      "tengah_str": "12.269,91",
+      "tengah_sap": "12269,91",
+      "delta": -25.42,
+      "delta_pct": -0.21,
+      "trend_icon": "▼",
+      "trend_class": "down",
+      "trend_text": "-25,42 (-0.21%)"
+    },
+    "CNY": {
+      "jual": 2752.09,
+      "jual_str": "2.752,09",
+      "jual_sap": "2752,09",
+      "beli": 2724.38,
+      "beli_str": "2.724,38",
+      "beli_sap": "2724,38",
+      "tengah": 2738.24,
+      "tengah_str": "2.738,24",
+      "tengah_sap": "2738,24",
+      "delta": -1.57,
+      "delta_pct": -0.06,
+      "trend_icon": "▼",
+      "trend_class": "down",
+      "trend_text": "-1,57 (-0.06%)"
+    },
+    "EUR": {
+      "jual": 20129.89,
+      "jual_str": "20.129,89",
+      "jual_sap": "20129,89",
+      "beli": 19927.78,
+      "beli_str": "19.927,78",
+      "beli_sap": "19927,78",
+      "tengah": 20028.83,
+      "tengah_str": "20.028,83",
+      "tengah_sap": "20028,83",
+      "delta": -55.17,
+      "delta_pct": -0.27,
+      "trend_icon": "▼",
+      "trend_class": "down",
+      "trend_text": "-55,17 (-0.27%)"
+    },
+    "GBP": {
+      "jual": 24165.41,
+      "jual_str": "24.165,41",
+      "jual_sap": "24165,41",
+      "beli": 23919.51,
+      "beli_str": "23.919,51",
+      "beli_sap": "23919,51",
+      "tengah": 24042.46,
+      "tengah_str": "24.042,46",
+      "tengah_sap": "24042,46",
+      "delta": -43.21,
+      "delta_pct": -0.18,
+      "trend_icon": "▼",
+      "trend_class": "down",
+      "trend_text": "-43,21 (-0.18%)"
+    },
+    "JPY": {
+      "jual": 115.12,
+      "jual_str": "115,12",
+      "jual_sap": "115,12",
+      "beli": 113.95,
+      "beli_str": "113,95",
+      "beli_sap": "113,95",
+      "tengah": 114.53,
+      "tengah_str": "114,53",
+      "tengah_sap": "114,53",
+      "delta": -0.1,
+      "delta_pct": -0.08,
+      "trend_icon": "▼",
+      "trend_class": "down",
+      "trend_text": "-0,10 (-0.08%)"
+    },
+    "KRW": {
+      "jual": 13.78,
+      "jual_str": "13,78",
+      "jual_sap": "13,78",
+      "beli": 13.64,
+      "beli_str": "13,64",
+      "beli_sap": "13,64",
+      "tengah": 13.71,
+      "tengah_str": "13,71",
+      "tengah_sap": "13,71",
+      "delta": 0.06,
+      "delta_pct": 0.44,
+      "trend_icon": "▲",
+      "trend_class": "up",
+      "trend_text": "+0,06 (+0.44%)"
+    },
+    "SGD": {
+      "jual": 14221.79,
+      "jual_str": "14.221,79",
+      "jual_sap": "14221,79",
+      "beli": 14078.09,
+      "beli_str": "14.078,09",
+      "beli_sap": "14078,09",
+      "tengah": 14149.94,
+      "tengah_str": "14.149,94",
+      "tengah_sap": "14149,94",
+      "delta": -18.64,
+      "delta_pct": -0.13,
+      "trend_icon": "▼",
+      "trend_class": "down",
+      "trend_text": "-18,64 (-0.13%)"
+    },
+    "USD": {
+      "jual": 18343.26,
+      "jual_str": "18.343,26",
+      "jual_sap": "18343,26",
+      "beli": 18160.74,
+      "beli_str": "18.160,74",
+      "beli_sap": "18160,74",
+      "tengah": 18252.0,
+      "tengah_str": "18.252,00",
+      "tengah_sap": "18252",
+      "delta": -12.0,
+      "delta_pct": -0.07,
+      "trend_icon": "▼",
+      "trend_class": "down",
+      "trend_text": "-12,00 (-0.07%)"
     }
   }
 }
