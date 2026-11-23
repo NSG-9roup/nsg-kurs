@@ -1,5 +1,33 @@
 [
   {
+    "id": "LOG-20261123-080037-DQW",
+    "report_type": "DQW",
+    "tanggal_bi": "23 November 2026",
+    "timestamp": "23/11/2026 08:00:37 WIB",
+    "recipients": [
+      "ferri@nabelsakha.com",
+      "samsul@nabelsakha.com"
+    ],
+    "status": "SUCCESS",
+    "status_code": 200,
+    "message": "Email [DQW] berhasil dikirim via SMTP dalam 1.22s",
+    "duration_seconds": 1.22
+  },
+  {
+    "id": "LOG-20261123-080032-NSG",
+    "report_type": "NSG",
+    "tanggal_bi": "23 November 2026",
+    "timestamp": "23/11/2026 08:00:32 WIB",
+    "recipients": [
+      "ferri@nabelsakha.com",
+      "samsul@nabelsakha.com"
+    ],
+    "status": "SUCCESS",
+    "status_code": 200,
+    "message": "Email [NSG] berhasil dikirim via SMTP dalam 1.54s",
+    "duration_seconds": 1.54
+  },
+  {
     "id": "LOG-20261120-080030-DQW",
     "report_type": "DQW",
     "tanggal_bi": "20 November 2026",
@@ -670,31 +698,5 @@
     "status_code": 200,
     "message": "Email [NSG] berhasil dikirim via SMTP dalam 3.23s",
     "duration_seconds": 3.23
-  },
-  {
-    "id": "LOG-20261019-124729",
-    "tanggal_bi": "19 Oktober 2026",
-    "timestamp": "19/10/2026 12:47:29 WIB",
-    "recipients": [
-      "ferri@nabelsakha.com",
-      "samsul@nabelsakha.com"
-    ],
-    "status": "SUCCESS",
-    "status_code": 200,
-    "message": "Email berhasil dikirim via SMTP dalam 1.35s",
-    "duration_seconds": 1.35
-  },
-  {
-    "id": "LOG-20261019-080028",
-    "tanggal_bi": "19 Oktober 2026",
-    "timestamp": "19/10/2026 08:00:28 WIB",
-    "recipients": [
-      "ferri@nabelsakha.com",
-      "samsul@nabelsakha.com"
-    ],
-    "status": "SUCCESS",
-    "status_code": 200,
-    "message": "Email berhasil dikirim via SMTP dalam 1.30s",
-    "duration_seconds": 1.3
   }
 ]
